@@ -1,0 +1,436 @@
+<<<<<<< HEAD
+
+  :root{
+=======
+:root{
+>>>>>>> c98e80f (Your commit message here)
+    --brand:#2c6d52;         /* deep teal */
+    --accent:#53b89a;        /* light teal */
+    --bg:#f4f7f6;
+    --card:#ffffff;
+    --muted:#6b7b70;
+    --danger:#d9534f;
+    --ok:#2f9b6a;
+    --shadow: 0 10px 30px rgba(44,109,82,.08);
+    --radius:14px;
+    --glass: rgba(255,255,255,0.7);
+    --transition: 280ms cubic-bezier(.2,.9,.2,1);
+    --max-width:1200px;
+  }
+
+  /* Reset & layout */
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,Segoe UI,system-ui,-apple-system,Arial; background:var(--bg); color:#1f3328;}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit}
+
+  /* App shell - left sidebar + main */
+  .app{
+    display:grid;
+    grid-template-columns:260px 1fr;
+    grid-template-rows:64px 1fr;
+    grid-template-areas: "nav nav" "side main";
+    min-height:100vh;
+  }
+
+  /* NAV */
+  header.nav{
+    grid-area:nav;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 20px;
+    background: linear-gradient(90deg, var(--brand), var(--accent));
+    color:#fff;
+    box-shadow:0 6px 18px rgba(44,109,82,.22);
+    position:sticky; top:0; z-index:20;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.08);font-weight:800}
+  .nav-right{display:flex;align-items:center;gap:12px}
+  .chip{background:rgba(255,255,255,0.12);padding:7px 10px;border-radius:999px;font-weight:600}
+  .chip{padding:6px 10px;border-radius:999px;background:#ffffff22;border:1px solid #ffffff44;font-size:.9rem}
+
+  /* SIDEBAR */
+  aside.side{
+    grid-area:side; padding:18px; background:linear-gradient(180deg, #ffffffcc, #ffffff);
+    border-right:1px solid #e6efe8; overflow:auto;
+  }
+  .side h3{color:var(--brand); margin:6px 6px 14px}
+  .navlist{display:flex;flex-direction:column;gap:8px}
+  .navitem{
+    display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;cursor:pointer;
+    transition: all 220ms ease; color: #153323; font-weight:700;
+  }
+  .navitem:hover{ background:#f1fbf7; transform:translateX(4px) }
+  .navitem.active{ background:linear-gradient(90deg, #e9f7f1, #f6fffb); box-shadow:var(--shadow); border-left:4px solid var(--accent) }
+
+  /* MAIN */
+  main.main{grid-area:main;padding:20px;overflow:auto; display:flex; justify-content:center}
+  .container{width:100%;max-width:var(--max-width);}
+
+  .section{display:none; opacity:0; transform:translateY(6px); transition: all var(--transition); }
+  .section.active{display:block; opacity:1; transform:none}
+
+  .title{font-size:1.4rem;color:var(--brand);margin:0 0 12px;font-weight:700}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+  .row{display:flex;gap:16px}
+  .col{flex:1;min-width:0}
+  .muted{color:var(--muted);font-size:0.95rem}
+
+  /* --- DOCTORS TAB LAYOUT --- */
+  /* Top hero (first div) - horizontal scroll of top doctors */
+  .doctors-hero{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px}
+  .hero-card{
+    min-width:260px;background:linear-gradient(180deg,#fff,#f7fffb);
+    border-radius:12px;padding:14px;box-shadow:0 8px 20px rgba(40,120,100,.06);flex-shrink:0;
+    transition:transform 220ms ease;
+  }
+  .hero-card:hover{ transform:translateY(-6px) }
+  .hero-card .photo{width:84px;height:84px;border-radius:12px;background:#eaf7f0;display:inline-grid;place-items:center;font-weight:800;color:var(--brand); margin-bottom:10px}
+  .rating{display:inline-flex;align-items:center;gap:8px;padding:6px 8px;border-radius:999px;background:#f1fbf7;color:var(--brand);font-weight:700}
+
+  /* Second div: grid with available doctors left and visited/contact right */
+  .doctors-grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
+  @media (max-width:980px){ .doctors-grid{grid-template-columns:1fr} }
+
+  /* Available doctors list */
+  .list-filter{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+  .input{padding:10px 12px;border-radius:10px;border:1.6px solid #e6efe8;flex:1}
+  .pill{padding:8px 10px;border-radius:999px;border:1px solid #dfeee4;background:#fff;cursor:pointer;font-weight:700}
+  .pill.active{background:linear-gradient(90deg,#eaf7f0,#ffffff);border-color:#cfe8de;color:var(--brand)}
+
+  .doctor-row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;border:1px solid #eef6f2;margin-bottom:10px;transition:all 180ms}
+  .doctor-row:hover{transform:translateY(-4px);box-shadow:0 10px 20px rgba(40,120,100,.06)}
+  .doctor-avatar{width:56px;height:56px;border-radius:10px;background:#eaf7f0;display:grid;place-items:center;font-weight:800;color:var(--brand)}
+  .doctor-info{flex:1}
+  .status{font-weight:800;padding:6px 10px;border-radius:999px;background:#ecfff7;color:var(--ok)}
+  .status.busy{background:#fff0f0;color:var(--danger)}
+
+  .actions{display:flex;gap:8px}
+  .btn{padding:8px 12px;border-radius:10px;border:0;background:var(--brand);color:#fff;font-weight:700;cursor:pointer}
+  .btn.ghost{background:#f6fbf8;color:var(--brand);border:1px solid #dfeee4}
+
+  /* Visited + Contact card */
+  .sidebar-card{position:sticky;top:20px}
+  .visited-item{padding:10px;border-radius:10px;border:1px solid #eef6f2;margin-bottom:10px;display:flex;gap:10px;align-items:center}
+  .mini-map{height:140px;border-radius:10px;background:linear-gradient(180deg,#e9f7f1,#f7fffb);display:grid;place-items:center;color:var(--muted);font-weight:700}
+
+  /* Profile / Symptom / Pharmacies / Contact content quick styling */
+  .profile-grid{display:grid;grid-template-columns:280px 1fr;gap:16px}
+  @media (max-width:980px){ .profile-grid{grid-template-columns:1fr} }
+  .metric{padding:12px;border-radius:10px;background:#f7fff9;border:1px solid #e7f7ef;text-align:center}
+
+  /* convenience small styles */
+  .small{font-size:0.9rem;color:var(--muted)}
+  .link{color:var(--brand);font-weight:700;cursor:pointer}
+  .drawer{position:fixed;right:-540px;top:84px;width:520px;height:calc(100% - 120px);background:var(--card);box-shadow:-18px 0 40px rgba(0,0,0,.12);transition:right 320ms;z-index:40;border-top-left-radius:14px;overflow:auto;padding:16px}
+  .drawer.open{right:20px}
+  .drawer .close{background:#f6fbf8;border:1px solid #e6efe8;padding:8px 10px;border-radius:10px;cursor:pointer}
+  
+  /* Family member details panel */
+  .family-member-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .family-member-panel.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .family-member-content {
+    background: white;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    box-shadow: var(--shadow);
+  }
+  
+  .family-member-panel.open .family-member-content {
+    transform: translateY(0);
+  }
+  
+  .family-member-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e6efe8;
+  }
+  
+  .family-member-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  
+  .family-member-info {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .family-member-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    background: #eaf7f0;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    color: var(--brand);
+    font-size: 1.5rem;
+  }
+  
+  .family-member-details {
+    flex: 1;
+  }
+  
+  .family-member-name {
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+  }
+  
+  .family-member-relation {
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  
+  .family-member-id {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  
+  .family-member-medical {
+    margin-bottom: 20px;
+  }
+  
+  .family-member-section-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--brand);
+  }
+  
+  .family-member-section {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e6efe8;
+  }
+  
+  .family-member-login-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--brand);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .family-member-login-btn:hover {
+    background: var(--accent);
+  }
+  
+  /* Family member list items */
+  .family-member-item {
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    margin-bottom: 5px;
+  }
+  
+  .family-member-item:hover {
+    background: #f1fbf7;
+  }
+  
+<<<<<<< HEAD
+=======
+  /* Connect doctor modal */
+  .connect-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .connect-modal.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .connect-content {
+    background: white;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    box-shadow: var(--shadow);
+  }
+  
+  .connect-modal.open .connect-content {
+    transform: translateY(0);
+  }
+  
+  .connect-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e6efe8;
+  }
+  
+  .connect-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  
+  .language-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .lang-btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #dfeee4;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .lang-btn.active {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+  }
+  
+  .problem-input {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e6efe8;
+    margin-bottom: 15px;
+    font-family: inherit;
+    resize: vertical;
+  }
+  
+>>>>>>> c98e80f (Your commit message here)
+  /* responsive */
+  @media (max-width:720px){
+    .app{grid-template-columns:1fr;grid-template-rows:64px auto 1fr;grid-template-areas:"nav" "side" "main"}
+    aside.side{display:flex;gap:8px;overflow-x:auto;padding:12px}
+    .navitem{white-space:nowrap;padding:10px 12px}
+    header.nav{padding:0 12px}
+    .drawer{width:100%;right:-100%;top:64px;height:calc(100% - 64px);border-radius:0}
+    .drawer.open{right:0}
+    
+    .family-member-content {
+      width: 95%;
+      padding: 15px;
+    }
+    
+    .family-member-info {
+      flex-direction: column;
+      text-align: center;
+    }
+<<<<<<< HEAD
+=======
+    
+    .connect-content {
+      width: 95%;
+      padding: 15px;
+    }
+  }
+
+
+  /* Additional styles for the enhanced profile section */
+  .edit-icon {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: var(--brand);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  
+  .editable-field {
+    position: relative;
+  }
+  
+  .family-member-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .family-member-item:last-child {
+    border-bottom: none;
+  }
+  
+  .member-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px;
+  }
+  
+  .small-btn {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+>>>>>>> c98e80f (Your commit message here)
+  }

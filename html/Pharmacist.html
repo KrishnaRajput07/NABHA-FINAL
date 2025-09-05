@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>NabhaCare — Pharmacist Dashboard</title>
+<<<<<<< HEAD
+  <link rel="stylesheet" href="Pharmacist.css">
+=======
+  <link rel="stylesheet" href="/css/pharmacist.css">
+  <style>
+    
+  </style>
+>>>>>>> c98e80f (Your commit message here)
+</head>
+<body>
+  <!-- NAV -->
+  <header class="nav" role="banner">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">💊</div>
+      <div>
+        <div style="font-weight:900">NabhaCare Pharmacy</div>
+        <small style="opacity:.9">Medicines & Supplies</small>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <span class="chip">Pharmacist: <strong id="phNameTop">Harpreet Singh</strong></span>
+      <span class="chip hide-md">Ph ID: <strong id="phIdTop">PH-7781</strong></span>
+
+      <div class="quick">
+        <button class="btn ghost" onclick="toast('Open notifications...')">🔔</button>
+        <button class="btn" onclick="toggleSide()">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="side" role="navigation" aria-label="Sidebar" id="side">
+    <h3 class="hide-md">Pharmacy</h3>
+    <nav class="navlist" id="sidebar">
+      <a class="navitem active" data-tab="profile">👤 <span class="hide-md">Profile</span></a>
+      <a class="navitem" data-tab="stock">📦 <span class="hide-md">Stock Management</span></a>
+<<<<<<< HEAD
+=======
+      <a class="navitem" data-tab="expiry">⚠️ <span class="hide-md">Expiry Alerts</span></a>
+>>>>>>> c98e80f (Your commit message here)
+      <a class="navitem" data-tab="purchase">🛒 <span class="hide-md">Purchase Requests</span></a>
+      <a class="navitem" data-tab="research">📚 <span class="hide-md">Research Library</span></a>
+      <a class="navitem" data-tab="prescriptions">🔍 <span class="hide-md">Prescription Lookup</span></a>
+      <div style="height:1px"></div>
+      <a class="navitem" data-tab="settings">⚙️ <span class="hide-md">Settings</span></a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" role="main">
+    <!-- PROFILE -->
+    <section id="profile" class="section">
+      <h2 class="title">Pharmacist Profile</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="avatar">HS</div>
+            <div>
+              <div style="font-weight:800;font-size:1.05rem" id="phName">Harpreet Singh</div>
+              <div class="muted">Head Pharmacist — Nabha</div>
+            </div>
+            <div class="right badge ok">ID: <span id="phId">PH-7781</span></div>
+          </div>
+          <div class="sep"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="card small" style="min-width:140px">
+              <div class="muted">In-stock SKUs</div>
+              <div style="font-weight:800;font-size:1.1rem">342</div>
+            </div>
+            <div class="card small" style="min-width:140px">
+              <div class="muted">Pending Orders</div>
+              <div style="font-weight:800;font-size:1.1rem">6</div>
+            </div>
+            <div class="card small" style="min-width:140px">
+              <div class="muted">Low-stock</div>
+              <div style="font-weight:800;font-size:1.1rem;color:var(--warn)">12</div>
+            </div>
+<<<<<<< HEAD
+=======
+            <div class="card small" style="min-width:140px">
+              <div class="muted">Expiring Soon</div>
+              <div style="font-weight:800;font-size:1.1rem;color:var(--danger)" id="expiringCount">5</div>
+            </div>
+>>>>>>> c98e80f (Your commit message here)
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div>
+              <div style="font-weight:800">Quick Actions</div>
+              <div class="muted">Fast pharmacy operations</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+<<<<<<< HEAD
+            <button class="btn" onclick="openAddStock()">➕ Add Stock</button>
+=======
+            <button class="btn" onclick="openAddBatch()">➕ Add Batch</button>
+>>>>>>> c98e80f (Your commit message here)
+            <button class="btn line" onclick="openPurchaseForm()">🛒 New Purchase Request</button>
+            <button class="btn line" onclick="toast('Syncing with suppliers…')">⟳ Sync Inventory</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STOCK MANAGEMENT -->
+    <section id="stock" class="section hidden">
+      <h2 class="title">Stock Management</h2>
+
+      <div class="card stock-toolbar" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+<<<<<<< HEAD
+        <input id="stockSearch" class="input" placeholder="Search medicine or salt">
+        <button class="pill active" data-stock="all" onclick="filterStock(this)">All</button>
+        <button class="pill" data-stock="low" onclick="filterStock(this)">Low</button>
+        <button class="pill" data-stock="out" onclick="filterStock(this)">Out</button>
+        <div class="right" style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn" onclick="toast('Exporting stock CSV…')">⬇️ Export</button>
+          <button class="btn line" onclick="openAddStock()">➕ Add / Update</button>
+=======
+        <input id="stockSearch" class="input" placeholder="Search medicine, salt, or batch">
+        <button class="pill active" data-stock="all" onclick="filterStock(this)">All</button>
+        <button class="pill" data-stock="low" onclick="filterStock(this)">Low</button>
+        <button class="pill" data-stock="out" onclick="filterStock(this)">Out</button>
+        <button class="pill" data-stock="expiring" onclick="filterStock(this)">Expiring Soon</button>
+        <div class="right" style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn" onclick="exportStock()">⬇️ Export</button>
+          <button class="btn line" onclick="openAddBatch()">➕ Add Batch</button>
+>>>>>>> c98e80f (Your commit message here)
+        </div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <table>
+          <thead>
+<<<<<<< HEAD
+            <tr><th>Medicine</th><th>Salt</th><th>Qty</th><th>Expiry</th><th>Status</th></tr>
+=======
+            <tr>
+              <th>Medicine</th>
+              <th>Salt</th>
+              <th>Batch No.</th>
+              <th>Qty</th>
+              <th>Expiry</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+>>>>>>> c98e80f (Your commit message here)
+          </thead>
+          <tbody id="stockBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+<<<<<<< HEAD
+    <!-- PURCHASE REQUESTS -->
+    <section id="purchase" class="section hidden">
+      <h2 class="title">Purchase Requests</h2>
+=======
+    <!-- EXPIRY ALERTS SECTION -->
+    <section id="expiry" class="section hidden">
+      <h2 class="title">Expiry Alerts</h2>
+      <div class="card">
+        <div id="expiryAlerts">
+          <!-- Expiry alerts will be populated here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PURCHASE REQUESTS -->
+    <section id="purchase" class="section hidden">
+      <h2 class="title">Purchase Requests</h2>
+      
+      <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+        <input id="purchaseSearch" class="input" placeholder="Search requests...">
+        <button class="btn line" onclick="openPurchaseForm()">➕ New Request</button>
+      </div>
+>>>>>>> c98e80f (Your commit message here)
+
+      <div id="purchaseList" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
+        <!-- dynamic requests -->
+      </div>
+    </section>
+
+    <!-- RESEARCH LIBRARY -->
+    <section id="research" class="section hidden">
+      <h2 class="title">Research Library</h2>
+
+<<<<<<< HEAD
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+        <input id="researchSearch" class="input" placeholder="Search research & docs">
+        <button class="btn line" onclick="toast('Fetching latest papers…')">🔎 Search</button>
+=======
+      <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+        <input id="researchSearch" class="input" placeholder="Search research & docs">
+        <button class="btn line" onclick="toast('Fetching latest papers…')">🔎 Search</button>
+        <button class="btn line" onclick="toast('Opening research upload…')">📤 Upload</button>
+>>>>>>> c98e80f (Your commit message here)
+      </div>
+
+      <div id="researchList" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
+        <!-- research cards -->
+      </div>
+    </section>
+
+    <!-- PRESCRIPTIONS LOOKUP -->
+    <section id="prescriptions" class="section hidden">
+      <h2 class="title">Prescription Lookup</h2>
+
+<<<<<<< HEAD
+      <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+=======
+      <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+>>>>>>> c98e80f (Your commit message here)
+        <input id="prescSearch" class="input" placeholder="Enter Patient ID or Prescription ID (e.g. PA-001, RX-2025-01)">
+        <button class="btn" onclick="searchPrescription()">Search</button>
+        <button class="btn line" onclick="demoAIPresc()">Demo AI Presc</button>
+      </div>
+
+      <div id="prescResult" style="margin-top:12px"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="settings" class="section hidden">
+      <h2 class="title">Settings</h2>
+<<<<<<< HEAD
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:8px">Preferences</div>
+        <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" class="input" id="autoSync"> Auto-sync with suppliers</label>
+=======
+      
+      <div class="grid grid-2">
+        <div class="card">
+          <div style="font-weight:800;margin-bottom:12px">Account Preferences</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" id="autoSync"> Auto-sync with suppliers
+            </label>
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" id="lowStockAlerts" checked> Low stock alerts
+            </label>
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" id="expiryAlerts" checked> Expiry alerts
+            </label>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div style="font-weight:800;margin-bottom:12px">Notification Settings</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" checked> Email notifications
+            </label>
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" checked> Push notifications
+            </label>
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox"> SMS alerts
+            </label>
+          </div>
+        </div>
+        
+        <div class="card" style="grid-column: span 2">
+          <div style="font-weight:800;margin-bottom:12px">Pharmacy Information</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <label style="display:block;margin-bottom:4px;font-weight:600">Pharmacy Name</label>
+              <input type="text" class="input" value="NabhaCare Pharmacy">
+            </div>
+            <div>
+              <label style="display:block;margin-bottom:4px;font-weight:600">License Number</label>
+              <input type="text" class="input" value="PUN-PH-2023-7781">
+            </div>
+            <div>
+              <label style="display:block;margin-bottom:4px;font-weight:600">Contact Email</label>
+              <input type="email" class="input" value="pharmacy@nabhacare.in">
+            </div>
+            <div>
+              <label style="display:block;margin-bottom:4px;font-weight:600">Phone Number</label>
+              <input type="tel" class="input" value="+91 98765 43210">
+            </div>
+            <div style="grid-column: span 2">
+              <label style="display:block;margin-bottom:4px;font-weight:600">Address</label>
+              <textarea class="textarea" rows="2">Nabha Main Road, Nabha, Punjab - 147201</textarea>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:12px">
+            <button class="btn" onclick="toast('Settings saved successfully')">Save Changes</button>
+          </div>
+        </div>
+>>>>>>> c98e80f (Your commit message here)
+      </div>
+    </section>
+  </main>
+
+<<<<<<< HEAD
+  <!-- DRAWER: Add/Update Stock -->
+  <aside class="drawer" id="stockDrawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="font-weight:900">Add / Update Stock</div>
+      </div>
+      <div>
+        <button class="btn line" onclick="closeStockDrawer()">Close</button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div class="card small">
+        <label>Medicine Name</label>
+        <input id="addName" class="input" placeholder="e.g. Paracetamol 500mg">
+        <label style="margin-top:8px">Salt / Composition</label>
+        <input id="addSalt" class="input" placeholder="e.g. Acetaminophen">
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="addQty" type="number" class="input" placeholder="Quantity">
+          <input id="addExpiry" type="month" class="input" placeholder="Expiry">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <select id="addStatus" class="select">
+            <option value="ok">Available</option>
+            <option value="low">Low</option>
+            <option value="out">Out</option>
+          </select>
+          <button class="btn" onclick="submitAddStock()">Save</button>
+        </div>
+      </div>
+=======
+  <!-- DRAWER: Add/Update Batch -->
+  <aside class="drawer" id="batchDrawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="font-weight:900">Add / Update Medicine Batch</div>
+      </div>
+      <div>
+        <button class="btn line" onclick="closeBatchDrawer()">Close</button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <form id="batchForm" onsubmit="return handleBatchSubmit(event)">
+        <div class="card small">
+          <label>Medicine Name *</label>
+          <input id="batchName" class="input" placeholder="e.g. Paracetamol 500mg" required>
+          <label style="margin-top:8px">Salt / Composition *</label>
+          <input id="batchSalt" class="input" placeholder="e.g. Acetaminophen" required>
+          <label style="margin-top:8px">Batch Number *</label>
+          <input id="batchNumber" class="input" placeholder="e.g. BATCH001" required>
+          <div class="batch-info">Unique identifier for this batch</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <div style="flex:1">
+              <label>Quantity *</label>
+              <input id="batchQty" type="number" class="input" min="0" required>
+            </div>
+            <div style="flex:1">
+              <label>Expiry Date *</label>
+              <input id="batchExpiry" type="date" class="input" required>
+            </div>
+          </div>
+          <div class="warning" id="expiryWarning"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button type="submit" class="btn">Save Batch</button>
+            <button type="button" class="btn line" onclick="closeBatchDrawer()">Cancel</button>
+          </div>
+        </div>
+      </form>
+>>>>>>> c98e80f (Your commit message here)
+
+      <div class="card small">
+        <div style="font-weight:800">Recent Adds</div>
+        <div id="recentAdds" class="muted" style="margin-top:8px">—</div>
+      </div>
+    </div>
+  </aside>
+
+<<<<<<< HEAD
+=======
+  <!-- MODAL: Purchase Request Form -->
+  <div class="modal-back" id="purchaseModal">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-weight:900">New Purchase Request</div>
+        <button class="btn line" onclick="closePurchaseModal()">Close</button>
+      </div>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="display:block;margin-bottom:4px;font-weight:600">Medicine Name</label>
+          <input id="purchaseName" class="input" placeholder="e.g. Amoxicillin 500mg">
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:4px;font-weight:600">Quantity</label>
+          <input id="purchaseQty" type="number" class="input" placeholder="e.g. 50">
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:4px;font-weight:600">Priority</label>
+          <select id="purchasePriority" class="select">
+            <option value="normal">Normal</option>
+            <option value="high">High Priority</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:4px;font-weight:600">Requested By</label>
+          <input id="purchaseRequester" class="input" placeholder="Your name or department">
+        </div>
+        <div style="grid-column: span 2">
+          <label style="display:block;margin-bottom:4px;font-weight:600">Notes</label>
+          <textarea id="purchaseNotes" class="textarea" rows="3" placeholder="Additional information..."></textarea>
+        </div>
+      </div>
+      
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+        <button class="btn line" onclick="closePurchaseModal()">Cancel</button>
+        <button class="btn" onclick="submitPurchaseRequest()">Submit Request</button>
+      </div>
+    </div>
+  </div>
+
+>>>>>>> c98e80f (Your commit message here)
+  <!-- MODAL: Research Preview -->
+  <div class="modal-back" id="researchModal">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-weight:900" id="researchTitle">Research Title</div>
+        <button class="btn line" onclick="closeResearchModal()">Close</button>
+      </div>
+      <div id="researchBody" style="max-height:60vh;overflow:auto" class="muted">Abstract / preview...</div>
+    </div>
+  </div>
+
+  <!-- MODAL: Prescription AI / Fulfill -->
+  <div class="modal-back" id="prescModal">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-weight:900" id="prescTitle">Prescription</div>
+        <button class="btn line" onclick="closePrescModal()">Close</button>
+      </div>
+
+      <div id="prescBody">
+        <!-- AI output will go here -->
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button class="btn" onclick="fulfillPrescription()">✔️ Fulfill & Dispense</button>
+        <button class="btn line" onclick="toast('Sent to ordering system')">Push to Purchase</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- mobile quick -->
+  <div class="mobile-footer" id="mobileFooter">
+    <button class="btn" onclick="openTab('prescriptions')">Prescriptions</button>
+    <button class="btn" onclick="openTab('stock')">Stock</button>
+    <button class="btn" onclick="openTab('purchase')">Requests</button>
+  </div>
+
+<<<<<<< HEAD
+  <script src="Pharmacist.js"></script>
+</body>
+</html>
+=======
+  <script src="/js/pharmacist.js">
+   
+
+  </script>
+</body>
+</html>
+>>>>>>> c98e80f (Your commit message here)

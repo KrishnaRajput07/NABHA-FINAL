@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NabhaCare - Admin Verification Portal</title>
+  <style>
+    :root {
+      --primary: #2c6d52;
+      --primary-light: #53b89a;
+      --primary-lighter: #e1f3ec;
+      --secondary: #ff8c42;
+      --dark: #223729;
+      --light: #f6fbf8;
+      --white: #ffffff;
+      --muted: #5f7564;
+      --success: #3bb273;
+      --warning: #f0ad4e;
+      --danger: #d9534f;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(44, 109, 82, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* Layout */
+    .admin-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: 70px 1fr;
+      grid-template-areas:
+        "sidebar header"
+        "sidebar main";
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .admin-header {
+      grid-area: header;
+      background: var(--white);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      z-index: 10;
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--light);
+      border-radius: 30px;
+      padding: 8px 16px;
+      width: 300px;
+    }
+
+    .search-box input {
+      border: none;
+      background: transparent;
+      padding: 6px 10px;
+      width: 100%;
+      outline: none;
+    }
+
+    .admin-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .admin-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-lighter);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Sidebar */
+    .admin-sidebar {
+      grid-area: sidebar;
+      background: var(--primary);
+      color: white;
+      padding: 24px 0;
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar-brand {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 24px;
+    }
+
+    .sidebar-brand h1 {
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-item {
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.15);
+      border-left: 4px solid var(--secondary);
+    }
+
+    /* Main Content */
+    .admin-main {
+      grid-area: main;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      margin-bottom: 24px;
+    }
+
+    .section-header h2 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card h3 {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .stat-card .value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Verification Tables */
+    .verification-table {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .table-header {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    .table-header h3 {
+      color: var(--primary);
+    }
+
+    .filters {
+      display: flex;
+      gap: 12px;
+    }
+
+    .filter-select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: var(--white);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 16px 20px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background: var(--primary-lighter);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: #f9f9f9;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .status-pending {
+      background: #fff4e6;
+      color: #f76707;
+    }
+
+    .status-verified {
+      background: #d3f9d8;
+      color: #2b8a3e;
+    }
+
+    .status-rejected {
+      background: #ffe3e3;
+      color: #c92a2a;
+    }
+
+    .action-btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-view {
+      background: var(--primary-lighter);
+      color: var(--primary);
+    }
+
+    .btn-view:hover {
+      background: var(--primary-light);
+      color: white;
+    }
+
+    .btn-verify {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-reject {
+      background: var(--danger);
+      color: white;
+      margin-left: 8px;
+    }
+
+    /* Verification Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      display: none;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .verification-modal {
+      background: var(--white);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      color: var(--primary);
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .applicant-info {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .applicant-photo {
+      text-align: center;
+    }
+
+    .applicant-photo img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--primary-lighter);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .info-item {
+      margin-bottom: 12px;
+    }
+
+    .info-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      font-weight: 500;
+    }
+
+    .documents-section {
+      margin: 24px 0;
+    }
+
+    .documents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .document-card {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .document-card:hover {
+      border-color: var(--primary-light);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .document-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    .verify-actions {
+      padding: 20px 24px;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* External Verification Links */
+    .verification-links {
+      background: var(--primary-lighter);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin: 24px 0;
+    }
+
+    .verification-links h4 {
+      margin-bottom: 16px;
+      color: var(--primary);
+    }
+
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .ext-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: var(--white);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--dark);
+      transition: all 0.2s;
+    }
+
+    .ext-link:hover {
+      background: var(--primary-light);
+      color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .admin-container {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "header"
+          "main";
+      }
+      
+      .admin-sidebar {
+        display: none;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .applicant-info {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .search-box {
+        width: 200px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .filters {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .admin-header {
+        padding: 0 16px;
+      }
+      
+      .search-box {
+        display: none;
+      }
+      
+      .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Header -->
+    <header class="admin-header">
+      <div class="search-container">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" placeholder="Search verification requests...">
+        </div>
+      </div>
+      <div class="admin-actions">
+        <div class="admin-profile">
+          <div class="avatar">AD</div>
+          <div>
+            <div>Admin User</div>
+            <small style="color: var(--muted)">Super Admin</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <h1>🏥 NabhaCare Admin</h1>
+      </div>
+      <nav>
+        <div class="nav-item active" data-target="dashboard">
+          <span>📊</span> Dashboard
+        </div>
+        <div class="nav-item" data-target="doctor-verification">
+          <span>👨‍⚕️</span> Doctor Verification
+        </div>
+        <div class="nav-item" data-target="pharmacist-verification">
+          <span>💊</span> Pharmacist Verification
+        </div>
+        <div class="nav-item" data-target="settings">
+          <span>⚙️</span> Settings
+        </div>
+        <div class="nav-item">
+          <span>🚪</span> Logout
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Dashboard Section -->
+      <section id="dashboard" class="section active">
+        <div class="section-header">
+          <h2>Verification Dashboard</h2>
+          <p>Monitor and manage all verification requests in one place</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Pending Verifications</h3>
+            <div class="value">24</div>
+          </div>
+          <div class="stat-card">
+            <h3>Doctor Verifications</h3>
+            <div class="value">18</div>
+          </div>
+          <div class="stat-card">
+            <h3>Pharmacist Verifications</h3>
+            <div class="value">6</div>
+          </div>
+          <div class="stat-card">
+            <h3>Verified This Month</h3>
+            <div class="value">42</div>
+          </div>
+        </div>
+
+        <div class="verification-table">
+          <div class="table-header">
+            <h3>Recent Verification Requests</h3>
+            <div class="filters">
+              <select class="filter-select">
+                <option>All Status</option>
+                <option>Pending</option>
+                <option>Verified</option>
+                <option>Rejected</option>
+              </select>
+              <select class="filter-select">
+                <option>All Types</option>
+                <option>Doctors</option>
+                <option>Pharmacists</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dr. Rajesh Kumar</td>
+                <td>Doctor</td>
+                <td>2 days ago</td>
+                <td><span class="status-badge status-pending">Pending</span></td>
+                <td>
+                  <button class="action-btn btn-view" data-id="1">Review</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Dr. Priya Sharma</td>
+                <td>Doctor</td>
+                <td>1 day ago</td>
+                <td><span class="status-badge status-pending">Pending</span></td>
+                <td>
+                  <button class="action-btn btn-view" data-id="2">Review</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Harpreet Singh</td>
+                <td>Pharmacist</td>
+                <td>3 days ago</td>
+                <td><span class="status-badge status-pending">Pending</span></td>
+                <td>
+                  <button class="action-btn btn-view" data-id="3">Review</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Dr. Amit Patel</td>
+                <td>Doctor</td>
+                <td>5 days ago</td>
+                <td><span class="status-badge status-verified">Verified</span></td>
+                <td>
+                  <button class="action-btn btn-view" data-id="4">View</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Kiran Mehta</td>
+                <td>Pharmacist</td>
+                <td>1 week ago</td>
+                <td><span class="status-badge status-rejected">Rejected</span></td>
+                <td>
+                  <button class="action-btn btn-view" data-id="5">View</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Doctor Verification Section -->
+      <section id="doctor-verification" class="section">
+        <div class="section-header">
+          <h2>Doctor Verification</h2>
+          <p>Verify medical practitioners using NMC and other official databases</p>
+        </div>
+
+        <div class="verification-table">
+          <div class="table-header">
+            <h3>Doctor Verification Requests</h3>
+            <div class="filters">
+              <select class="filter-select">
+                <option>All Status</option>
+                <option>Pending</option>
+                <option>Verified</option>
+                <option>Rejected</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Specialization</th>
+                <th>NMC Number</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dr. Rajesh Kumar</td>
+                <td>Cardiology</td>
+                <td>NMC-123456</td>
+                <td>2 days ago</td>
+                <td><span class="status-badge status-pending">Pending</span></td>
+                <td>
+                  <button class="action-btn btn-view" data-id="1">Review</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Dr. Priya Sharma</td>
+                <td>Pediatrics</td>
+                <td>NMC-654321</td>
+                <td>1 day ago</td>
+                <td><span class="status-badge status-pending">Pending</span></td>
+                <td>
+                  <button class="action-btn btn-view" data-id="2">Review</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Dr. Amit Patel</td>
+                <td>Orthopedics</td>
+                <td>NMC-987654</td>
+                <td>5 days ago</td>
+                <td><span class="status-badge status-verified">Verified</span></td>
+                <td>
+                  <button class="action-btn btn-view" data-id="4">View</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Pharmacist Verification Section -->
+      <section id="pharmacist-verification" class="section">
+        <div class="section-header">
+          <h2>Pharmacist Verification</h2>
+          <p>Verify pharmacy professionals using PCI and state licensing databases</p>
+        </div>
+
+        <div class="verification-table">
+          <div class="table-header">
+            <h3>Pharmacist Verification Requests</h3>
+            <div class="filters">
+              <select class="filter-select">
+                <option>All Status</option>
+                <option>Pending</option>
+                <option>Verified</option>
+                <option>Rejected</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Pharmacy Name</th>
+                <th>License Number</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Harpreet Singh</td>
+                <td>NabhaCare Pharmacy</td>
+                <td>PCI-PUN-7781</td>
+                <td>3 days ago</td>
+                <td><span class="status-badge status-pending">Pending</span></td>
+                <td>
+                  <button class="action-btn btn-view" data-id="3">Review</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Kiran Mehta</td>
+                <td>MedPlus Distributors</td>
+                <td>PCI-PUN-6654</td>
+                <td>1 week ago</td>
+                <td><span class="status-badge status-rejected">Rejected</span></td>
+                <td>
+                  <button class="action-btn btn-view" data-id="5">View</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Settings Section -->
+      <section id="settings" class="section">
+        <div class="section-header">
+          <h2>Admin Settings</h2>
+          <p>Configure verification workflow and system settings</p>
+        </div>
+        
+        <div class="stat-card">
+          <h3>Verification Settings</h3>
+          <p>Configure how verification processes work in your system</p>
+          <div style="margin-top: 16px;">
+            <label>
+              <input type="checkbox" checked> Auto-check with NMC database
+            </label><br>
+            <label>
+              <input type="checkbox" checked> Auto-check with PCI database
+            </label><br>
+            <label>
+              <input type="checkbox"> Require secondary approval for verification
+            </label>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Verification Modal -->
+  <div class="modal-backdrop" id="verificationModal">
+    <div class="verification-modal">
+      <div class="modal-header">
+        <h3>Verification Details - <span id="modal-title">Dr. Rajesh Kumar</span></h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="applicant-info">
+          <div class="applicant-photo">
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'><rect width='150' height='150' fill='%23e1f3ec'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='60' fill='%232c6d52'>👨‍⚕️</text></svg>" alt="Applicant Photo">
+            <h3 style="margin-top: 12px;">Dr. Rajesh Kumar</h3>
+            <p style="color: var(--muted);">Cardiologist</p>
+          </div>
+          <div class="info-details">
+            <h4 style="margin-bottom: 16px; color: var(--primary);">Personal Information</h4>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Email</div>
+                <div class="info-value">dr.rajesh@example.com</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Phone</div>
+                <div class="info-value">+91 98765 43210</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">NMC Number</div>
+                <div class="info-value">NMC-123456</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Date of Birth</div>
+                <div class="info-value">15/03/1980</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Experience</div>
+                <div class="info-value">12 years</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Education</div>
+                <div class="info-value">MBBS, MD (Cardiology)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="verification-links">
+          <h4>External Verification Links</h4>
+          <div class="links-grid">
+            <a href="#" class="ext-link">
+              <span>🔗</span> Verify with NMC Registry
+            </a>
+            <a href="#" class="ext-link">
+              <span>🔗</span> Check IMR Records
+            </a>
+            <a href="#" class="ext-link">
+              <span>🔗</span> State Medical Council
+            </a>
+            <a href="#" class="ext-link">
+              <span>🔗</span> Verify Degree Authenticity
+            </a>
+          </div>
+        </div>
+
+        <div class="documents-section">
+          <h4 style="margin-bottom: 16px; color: var(--primary);">Submitted Documents</h4>
+          <div class="documents-grid">
+            <div class="document-card">
+              <div class="document-icon">📄</div>
+              <div>Medical Degree</div>
+              <small style="color: var(--muted);">2.4 MB</small>
+            </div>
+            <div class="document-card">
+              <div class="document-icon">📄</div>
+              <div>NMC Registration</div>
+              <small style="color: var(--muted);">1.7 MB</small>
+            </div>
+            <div class="document-card">
+              <div class="document-icon">📄</div>
+              <div>ID Proof</div>
+              <small style="color: var(--muted);">3.1 MB</small>
+            </div>
+            <div class="document-card">
+              <div class="document-icon">📄</div>
+              <div>Address Proof</div>
+              <small style="color: var(--muted);">2.8 MB</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="verification-notes">
+          <h4 style="margin-bottom: 16px; color: var(--primary);">Verification Notes</h4>
+          <textarea placeholder="Add notes about this verification..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; min-height: 100px;"></textarea>
+        </div>
+      </div>
+      <div class="verify-actions">
+        <button class="action-btn btn-reject">Reject</button>
+        <button class="action-btn btn-verify">Verify</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        // Remove active class from all items
+        document.querySelectorAll('.nav-item').forEach(navItem => {
+          navItem.classList.remove('active');
+        });
+        
+        // Add active class to clicked item
+        this.classList.add('active');
+        
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(section => {
+          section.classList.remove('active');
+        });
+        
+        // Show the target section
+        const targetId = this.getAttribute('data-target');
+        if (targetId) {
+          document.getElementById(targetId).classList.add('active');
+        }
+      });
+    });
+
+    // Modal functionality
+    const modal = document.getElementById('verificationModal');
+    const closeModalBtn = document.querySelector('.close-modal');
+    
+    // Open modal when Review button is clicked
+    document.querySelectorAll('.btn-view').forEach(button => {
+      button.addEventListener('click', function() {
+        const applicantId = this.getAttribute('data-id');
+        // In a real app, you would fetch applicant data based on ID
+        modal.classList.add('active');
+      });
+    });
+    
+    // Close modal when X is clicked
+    closeModalBtn.addEventListener('click', function() {
+      modal.classList.remove('active');
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+      if (event.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+
+    // Verification actions
+    document.querySelector('.btn-verify').addEventListener('click', function() {
+      alert('Applicant verified successfully!');
+      modal.classList.remove('active');
+    });
+    
+    document.querySelector('.btn-reject').addEventListener('click', function() {
+      const reason = prompt('Please specify reason for rejection:');
+      if (reason) {
+        alert('Application rejected. Reason: ' + reason);
+        modal.classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

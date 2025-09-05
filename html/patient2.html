@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>NabhaCare — Patient Dashboard</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+  :root{
+    --brand:#2c6d52;         /* deep teal */
+    --accent:#53b89a;        /* light teal */
+    --bg:#f4f7f6;
+    --card:#ffffff;
+    --muted:#6b7b70;
+    --danger:#d9534f;
+    --ok:#2f9b6a;
+    --shadow: 0 10px 30px rgba(44,109,82,.08);
+    --radius:14px;
+    --glass: rgba(255,255,255,0.7);
+    --transition: 280ms cubic-bezier(.2,.9,.2,1);
+    --max-width:1200px;
+  }
+
+  /* Reset & layout */
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,Segoe UI,system-ui,-apple-system,Arial; background:var(--bg); color:#1f3328;}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit}
+
+  /* App shell - left sidebar + main */
+  .app{
+    display:grid;
+    grid-template-columns:260px 1fr;
+    grid-template-rows:64px 1fr;
+    grid-template-areas: "nav nav" "side main";
+    min-height:100vh;
+  }
+
+  /* NAV */
+  header.nav{
+    grid-area:nav;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 20px;
+    background: linear-gradient(90deg, var(--brand), var(--accent));
+    color:#fff;
+    box-shadow:0 6px 18px rgba(44,109,82,.22);
+    position:sticky; top:0; z-index:20;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.08);font-weight:800}
+  .nav-right{display:flex;align-items:center;gap:12px}
+  .chip{background:rgba(255,255,255,0.12);padding:7px 10px;border-radius:999px;font-weight:600}
+  .chip{padding:6px 10px;border-radius:999px;background:#ffffff22;border:1px solid #ffffff44;font-size:.9rem}
+
+  /* SIDEBAR */
+  aside.side{
+    grid-area:side; padding:18px; background:linear-gradient(180deg, #ffffffcc, #ffffff);
+    border-right:1px solid #e6efe8; overflow:auto;
+  }
+  .side h3{color:var(--brand); margin:6px 6px 14px}
+  .navlist{display:flex;flex-direction:column;gap:8px}
+  .navitem{
+    display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;cursor:pointer;
+    transition: all 220ms ease; color: #153323; font-weight:700;
+  }
+  .navitem:hover{ background:#f1fbf7; transform:translateX(4px) }
+  .navitem.active{ background:linear-gradient(90deg, #e9f7f1, #f6fffb); box-shadow:var(--shadow); border-left:4px solid var(--accent) }
+
+  /* MAIN */
+  main.main{grid-area:main;padding:20px;overflow:auto; display:flex; justify-content:center}
+  .container{width:100%;max-width:var(--max-width);}
+
+  .section{display:none; opacity:0; transform:translateY(6px); transition: all var(--transition); }
+  .section.active{display:block; opacity:1; transform:none}
+
+  .title{font-size:1.4rem;color:var(--brand);margin:0 0 12px;font-weight:700}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+  .row{display:flex;gap:16px}
+  .col{flex:1;min-width:0}
+  .muted{color:var(--muted);font-size:0.95rem}
+
+  /* --- DOCTORS TAB LAYOUT --- */
+  /* Top hero (first div) - horizontal scroll of top doctors */
+  .doctors-hero{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px}
+  .hero-card{
+    min-width:260px;background:linear-gradient(180deg,#fff,#f7fffb);
+    border-radius:12px;padding:14px;box-shadow:0 8px 20px rgba(40,120,100,.06);flex-shrink:0;
+    transition:transform 220ms ease;
+  }
+  .hero-card:hover{ transform:translateY(-6px) }
+  .hero-card .photo{width:84px;height:84px;border-radius:12px;background:#eaf7f0;display:inline-grid;place-items:center;font-weight:800;color:var(--brand); margin-bottom:10px}
+  .rating{display:inline-flex;align-items:center;gap:8px;padding:6px 8px;border-radius:999px;background:#f1fbf7;color:var(--brand);font-weight:700}
+
+  /* Second div: grid with available doctors left and visited/contact right */
+  .doctors-grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
+  @media (max-width:980px){ .doctors-grid{grid-template-columns:1fr} }
+
+  /* Available doctors list */
+  .list-filter{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+  .input{padding:10px 12px;border-radius:10px;border:1.6px solid #e6efe8;flex:1}
+  .pill{padding:8px 10px;border-radius:999px;border:1px solid #dfeee4;background:#fff;cursor:pointer;font-weight:700}
+  .pill.active{background:linear-gradient(90deg,#eaf7f0,#ffffff);border-color:#cfe8de;color:var(--brand)}
+
+  .doctor-row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;border:1px solid #eef6f2;margin-bottom:10px;transition:all 180ms}
+  .doctor-row:hover{transform:translateY(-4px);box-shadow:0 10px 20px rgba(40,120,100,.06)}
+  .doctor-avatar{width:56px;height:56px;border-radius:10px;background:#eaf7f0;display:grid;place-items:center;font-weight:800;color:var(--brand)}
+  .doctor-info{flex:1}
+  .status{font-weight:800;padding:6px 10px;border-radius:999px;background:#ecfff7;color:var(--ok)}
+  .status.busy{background:#fff0f0;color:var(--danger)}
+
+  .actions{display:flex;gap:8px}
+  .btn{padding:8px 12px;border-radius:10px;border:0;background:var(--brand);color:#fff;font-weight:700;cursor:pointer}
+  .btn.ghost{background:#f6fbf8;color:var(--brand);border:1px solid #dfeee4}
+
+  /* Visited + Contact card */
+  .sidebar-card{position:sticky;top:20px}
+  .visited-item{padding:10px;border-radius:10px;border:1px solid #eef6f2;margin-bottom:10px;display:flex;gap:10px;align-items:center}
+  .mini-map{height:140px;border-radius:10px;background:linear-gradient(180deg,#e9f7f1,#f7fffb);display:grid;place-items:center;color:var(--muted);font-weight:700}
+
+  /* Profile / Symptom / Pharmacies / Contact content quick styling */
+  .profile-grid{display:grid;grid-template-columns:280px 1fr;gap:16px}
+  @media (max-width:980px){ .profile-grid{grid-template-columns:1fr} }
+  .metric{padding:12px;border-radius:10px;background:#f7fff9;border:1px solid #e7f7ef;text-align:center}
+
+  /* convenience small styles */
+  .small{font-size:0.9rem;color:var(--muted)}
+  .link{color:var(--brand);font-weight:700;cursor:pointer}
+  .drawer{position:fixed;right:-540px;top:84px;width:520px;height:calc(100% - 120px);background:var(--card);box-shadow:-18px 0 40px rgba(0,0,0,.12);transition:right 320ms;z-index:40;border-top-left-radius:14px;overflow:auto;padding:16px}
+  .drawer.open{right:20px}
+  .drawer .close{background:#f6fbf8;border:1px solid #e6efe8;padding:8px 10px;border-radius:10px;cursor:pointer}
+  
+  /* Family member details panel */
+  .family-member-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .family-member-panel.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .family-member-content {
+    background: white;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    box-shadow: var(--shadow);
+  }
+  
+  .family-member-panel.open .family-member-content {
+    transform: translateY(0);
+  }
+  
+  .family-member-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e6efe8;
+  }
+  
+  .family-member-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  
+  .family-member-info {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .family-member-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    background: #eaf7f0;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    color: var(--brand);
+    font-size: 1.5rem;
+  }
+  
+  .family-member-details {
+    flex: 1;
+  }
+  
+  .family-member-name {
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+  }
+  
+  .family-member-relation {
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  
+  .family-member-id {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  
+  .family-member-medical {
+    margin-bottom: 20px;
+  }
+  
+  .family-member-section-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--brand);
+  }
+  
+  .family-member-section {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e6efe8;
+  }
+  
+  .family-member-login-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--brand);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .family-member-login-btn:hover {
+    background: var(--accent);
+  }
+  
+  /* Family member list items */
+  .family-member-item {
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    margin-bottom: 5px;
+  }
+  
+  .family-member-item:hover {
+    background: #f1fbf7;
+  }
+  
+  /* Connect doctor modal */
+  .connect-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .connect-modal.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .connect-content {
+    background: white;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    box-shadow: var(--shadow);
+  }
+  
+  .connect-modal.open .connect-content {
+    transform: translateY(0);
+  }
+  
+  .connect-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e6efe8;
+  }
+  
+  .connect-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  
+  .language-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .lang-btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #dfeee4;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .lang-btn.active {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+  }
+  
+  .problem-input {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e6efe8;
+    margin-bottom: 15px;
+    font-family: inherit;
+    resize: vertical;
+  }
+  
+  /* Voice recording styles */
+  .voice-recorder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  
+  .language-selector-symptom {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .recording-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--danger);
+    font-weight: 600;
+  }
+  
+  .recording-dot {
+    width: 12px;
+    height: 12px;
+    background-color: var(--danger);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+  
+  .translation-status {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #f1fbf7;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  
+  /* responsive */
+  @media (max-width:720px){
+    .app{grid-template-columns:1fr;grid-template-rows:64px auto 1fr;grid-template-areas:"nav" "side" "main"}
+    aside.side{display:flex;gap:8px;overflow-x:auto;padding:12px}
+    .navitem{white-space:nowrap;padding:10px 12px}
+    header.nav{padding:0 12px}
+    .drawer{width:100%;right:-100%;top:64px;height:calc(100% - 64px);border-radius:0}
+    .drawer.open{right:0}
+    
+    .family-member-content {
+      width: 95%;
+      padding: 15px;
+    }
+    
+    .family-member-info {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .connect-content {
+      width: 95%;
+      padding: 15px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <!-- NAV -->
+    <header class="nav">
+      <div class="brand">
+        <div class="logo">NC</div>
+        <div>
+          <div style="font-weight:800">NabhaCare</div>
+          <div style="font-size:12px;opacity:.9">Patient Portal</div>
+        </div>
+      </div>
+      <div class="nav-right">
+        <div class="chip">Hi, <strong id="patTopName">Gurpreet</strong></div>
+        <span class="chip hide-md">Patient Id: <strong id="phIdTop">Pa-7781ad</strong></span>
+        <div class="quick">
+          <button class="btn ghost" onclick="toast('Open notifications...')">🔔</button>
+          <button class="btn" onclick="toggleSide()">☰</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside class="side" aria-label="Main navigation">
+      <h3>Patient</h3>
+      <nav class="navlist" role="tablist">
+        <div class="navitem active" data-tab="profile" role="tab" aria-selected="true">👤 <span class="hide-md">Profile</span></div>
+        <div class="navitem" data-tab="doctors" role="tab">🧑🏻‍⚕️<span class="hide-md">Doctors</span></div>
+        <div class="navitem" data-tab="symptom" role="tab">🔍 <span class="hide-md">Sympton Checker</span></div>
+        <div class="navitem" data-tab="pharmacies" role="tab">💊<span class="hide-md">Pharmacies</span></div>
+        <div class="navitem" data-tab="contact" role="tab">📞<span class="hide-md">Emergency SOS</span></div>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" role="main">
+      <div class="container">
+        <!-- PROFILE -->
+        <section id="profile" class="section active" aria-labelledby="profile-tab">
+          <h2 class="title">Your Profile</h2>
+          <div class="card profile-grid">
+            <div>
+              <div style="display:flex;gap:12px;align-items:center">
+                
+                <div style="width:110px;height:110px;border-radius:12px;background:#eaf7f0;
+            display:grid;place-items:center;font-weight:800;color:var(--brand);
+            cursor:pointer;overflow:hidden;position:relative"
+     onclick="document.getElementById('fileInput').click()">
+
+  <!-- Default initials -->
+  <span id="profile-initials">GK</span>
+  
+  <!-- Uploaded image preview -->
+  <img id="profile-img" src="" alt="Profile" 
+       style="width:100%;height:100%;object-fit:cover;display:none;border-radius:12px"/>
+</div>
+
+<!-- Hidden file input -->
+<input type="file" id="fileInput" accept="image/*" style="display:none" 
+       onchange="previewImage(event)" />
+
+                <div>
+                  <div style="font-weight:800;font-size:1.1rem">Gurpreet Kaur</div>
+                  <div class="small">PAT-0001 • Age 32 • Female • Nabha, Punjab</div>
+                </div>
+              </div>
+
+              <div style="margin-top:12px" class="card">
+                <div style="font-weight:800;margin-bottom:8px">Family</div>
+                <div class="family-member-item" data-member="harjit">
+                  Harjit Singh (Husband)
+                </div>
+                <div class="family-member-item" data-member="simran">
+                  Simran Kaur (Daughter)
+                </div>
+              </div>
+
+              <div style="margin-top:12px" class="card">
+                <div style="font-weight:800;margin-bottom:8px">Medical History</div>
+                <div class="small">No chronic conditions recorded • Allergies: None</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="card">
+                <div style="display:flex;gap:12px;align-items:center;justify-content:space-between">
+                  <div>
+                    <div style="font-weight:800">Upcoming appointment</div>
+                    <div class="small">15 Sep 2025 • 10:00 AM with Dr. Amanpreet</div>
+                  </div>
+                  <div><button class="btn" onclick="toast('Viewing appointment')">Details</button></div>
+                </div>
+              </div>
+
+              <div class="card" style="margin-top:12px">
+                <div style="font-weight:800;margin-bottom:8px">Recent Blood Report</div>
+                
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div class="card metric">
+                    <div class="small">Total Cholesterol</div>
+                    <div style="font-weight:800;font-size:1.1rem">182 mg/dL</div>
+                  </div>
+                  <div class="card metric">
+                    <div class="small">Vitamin D</div>
+                    <div style="font-weight:800;font-size:1.1rem">Slight Deficiency</div>
+                  </div>
+                  <div class="card metric">
+                    <div class="small">Hemoglobin</div>
+                    <div style="font-weight:800;font-size:1.1rem">13.5 g/dL</div>
+                  </div>
+                  <div class="card metric">
+                    <div class="small">Blood Sugar (Fasting)</div>
+                    <div style="font-weight:800;font-size:1.1rem">92 mg/dL</div>
+                  </div>
+                </div>
+              
+                <div style="margin-top:12px;text-align:right">
+                  <!-- If report exists -->
+                  <a href="reports/blood_report.pdf" target="_blank" class="btn">View Full Report</a>
+              
+                  <!-- If report not available -->
+                  <!-- <span class="small" style="color:gray">No report available</span> -->
+                </div>
+              </div>
+              
+
+              <div class="card" style="margin-top:12px">
+                <div style="font-weight:800;margin-bottom:8px">Recent Prescriptions</div>
+                <ul style="margin:0 0 0 16px" class="small">
+                  <li>Paracetamol 500mg — 2025-08-10</li>
+                  <li>Salbutamol inhaler — 2025-06-18</li>
+                </ul>
+                <div style="margin-top:10px"><a class="link" onclick="openTab('doctors')">Find doctor again →</a></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DOCTORS (single tab with first div + second div below) -->
+        <section id="doctors" class="section" aria-labelledby="doctors-tab">
+          <h2 class="title">Doctors</h2>
+
+          <!-- FIRST DIV: HERO / TOP DOCTORS (horizontal) -->
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="font-weight:800">Top Doctors</div>
+              <div class="small muted">Hand-picked specialists near you</div>
+            </div>
+
+            <div class="doctors-hero" id="topDoctorsHero" aria-hidden="false">
+              <!-- JS will populate hero cards -->
+            </div>
+          </div>
+
+          <!-- SECOND DIV: main grid below with available / visited & contact -->
+          <div class="doctors-grid">
+            <!-- LEFT: Available doctors + search & filters -->
+            <div>
+              <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                  <div style="font-weight:800">Available Doctors</div>
+                  <div class="small muted">Online now • click to connect</div>
+                </div>
+
+                <div class="list-filter">
+                  <input id="docSearch" class="input" placeholder="Search doctors (name, speciality)" oninput="renderAvailable()"/>
+                  <div style="display:flex;gap:8px">
+                    <button class="pill active" data-filter="all" onclick="setDoctorFilter(this)">All</button>
+                    <button class="pill" data-filter="online" onclick="setDoctorFilter(this)">Online</button>
+                    <button class="pill" data-filter="special" onclick="setDoctorFilter(this)">Specialists</button>
+                  </div>
+                </div>
+
+                <div id="availableList">
+                  <!-- JS populates available doctors -->
+                </div>
+
+              </div>
+
+              <div class="card" style="margin-top:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font-weight:800">Clinics Map</div>
+                  <div class="small muted">Clinic locations</div>
+                </div>
+                <div style="height:500px;border-radius:12px;" id="clinicMap">Map placeholder</div>
+              </div>
+            </div>
+
+            <!-- RIGHT: Visited doctors + contact / last visited -->
+            <div>
+              <div class="card sidebar-card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                  <div style="font-weight:800">Last Visited</div>
+                  <div class="small muted">Quick actions</div>
+                </div>
+
+                <div style="display:flex;gap:12px;align-items:center;margin-bottom:8px">
+                  <div style="width:64px;height:64px;border-radius:8px;background:#eaf7f0;display:grid;place-items:center;font-weight:800;color:var(--brand)">AS</div>
+                  <div style="flex:1">
+                    <div style="font-weight:800">Dr. Amanpreet Singh</div>
+                    <div class="small muted">General Physician • DOC-14237</div>
+                  </div>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button class="btn" onclick="openConnectModal('DOC-14237', 'Dr. Amanpreet Singh')">Connect</button>
+                </div>
+              </div>
+
+              <div class="card" style="margin-top:12px">
+                <div style="font-weight:800;margin-bottom:10px">Visited Doctors</div>
+                <div id="visitedList">
+                  <!-- JS populates visited doctors -->
+                </div>
+              </div>
+
+              <div class="card" style="margin-top:12px">
+                <div style="font-weight:800;margin-bottom:8px">Contact & Notifications</div>
+                <div class="small muted">If a doctor accepts your request they'll get notified and can call you back when free.</div>
+                <div style="margin-top:10px">
+                  <button class="btn" onclick="toast('Sending request to selected doctor…')">Send Request</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SYMPTOM CHECKER -->
+        <section id="symptom" class="section" aria-labelledby="symptom-tab">
+          <h2 class="title">Symptom Checker</h2>
+          <div class="card">
+            <div style="display:flex;gap:8px;align-items:center">
+              <textarea id="symptomText" rows="4" placeholder="Describe your symptoms in detail..." style="flex:1;padding:12px;border-radius:10px;border:1px solid #e6efe8"></textarea>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <button class="btn" id="runSymptom" onclick="runSymptom()">Analyze</button>
+                <button class="btn ghost" id="voiceSymptom" onclick="startVoiceRecording()">🎙️ Voice</button>
+              </div>
+            </div>
+            
+            <!-- Voice recording interface -->
+            <div id="voiceRecorder" class="voice-recorder" style="display: none;">
+              <div class="language-selector-symptom">
+                <button class="lang-btn active" data-lang="en" onclick="setRecordingLanguage(this)">English</button>
+                <button class="lang-btn" data-lang="hi" onclick="setRecordingLanguage(this)">हिंदी</button>
+                <button class="lang-btn" data-lang="pa" onclick="setRecordingLanguage(this)">ਪੰਜਾਬੀ</button>
+              </div>
+              
+              <div id="recordingStatus" class="recording-indicator" style="display: none;">
+                <div class="recording-dot"></div>
+                <span>Recording... Speak now</span>
+              </div>
+              
+              <div id="translationStatus" class="translation-status" style="display: none;">
+                Translating to English...
+              </div>
+              
+              <div style="display:flex;gap:8px">
+                <button class="btn" id="stopRecordingBtn" onclick="stopVoiceRecording()" style="display: none;">Stop</button>
+                <button class="btn ghost" onclick="cancelRecording()">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="symptomResult" class="card" style="display:none">
+            <div style="font-weight:800">Recommendation</div>
+            <div id="symptomOutcome" class="small" style="margin-top:8px"></div>
+            <div style="margin-top:12px">
+              <button class="btn" onclick="toast('Booking consult…')">Book Consult</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PHARMACIES -->
+        <section id="pharmacies" class="section" aria-labelledby="pharmacies-tab">
+          <h2 class="title">Nearby Pharmacies & Medicine Availability</h2>
+          <div class="card">
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+              <input id="medSearch" class="input" placeholder="Search medicine name..." oninput="renderPharmacies()" />
+              <button class="pill" onclick="renderPharmacies()">Search</button>
+            </div>
+            <div style="height:500px;border-radius:12px;" id="pharmMap">Map & availability placeholder</div>
+          </div>
+        </section>
+
+        <!-- CONTACT DOCTOR -->
+        <section id="contact" class="section" aria-labelledby="contact-tab">
+          <h2 class="title">🚨 Emergency SOS</h2>
+          <div class="card" style="border:2px solid #f66;box-shadow:0 0 10px rgba(255,0,0,0.2)">
+            <div style="font-weight:800;margin-bottom:8px;color:#d00">In case of emergency, act quickly</div>
+            <div class="small muted">
+              Use SOS options below. Your location & profile will be shared with the emergency team automatically.
+            </div>
+        
+            <!-- Emergency Actions -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+              <button class="btn" style="background:#d00;color:#fff" onclick="requestAmbulance()">🚑 Call Ambulance</button>
+              <button class="btn ghost" onclick="alertDoctor()">👨‍⚕️ Alert Doctor</button>
+              <button class="btn ghost" onclick="notifyFamily()">👨‍👩‍👧 Notify Family</button>
+              <button class="btn ghost" onclick="shareLocation()">📍 Share Live Location</button>
+            </div>
+        
+            <!-- Additional Help -->
+            <div style="margin-top:16px">
+              <div style="font-weight:700;margin-bottom:6px">Other SOS Options</div>
+              <ul class="small" style="margin:0 0 0 16px">
+                <li><a href="#" onclick="openFirstAid()">First Aid Guide</a></li>
+                <li><a href="#" onclick="emergencyHotline()">Call 108 / Emergency Helpline</a></li>
+                <li><a href="#" onclick="uploadEmergencyDocs()">Upload recent medical reports</a></li>
+                <li><a href="#" onclick="setEmergencyContacts()">Manage Emergency Contacts</a></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Drawer for doctor details -->
+    <aside id="docDrawer" class="drawer" aria-hidden="true">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-weight:800">Doctor Details</div>
+        <button class="close" onclick="closeDrawer()">Close</button>
+      </div>
+      <div id="drawerContent">
+        <!-- populated by JS -->
+      </div>
+    </aside>
+    
+    <!-- Family member details panel -->
+    <div id="familyMemberPanel" class="family-member-panel">
+      <div class="family-member-content">
+        <div class="family-member-header">
+          <h3>Family Member Details</h3>
+          <button class="family-member-close" onclick="closeFamilyMemberPanel()">&times;</button>
+        </div>
+        <div id="familyMemberDetails">
+          <!-- Content will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Connect to doctor modal -->
+    <div id="connectModal" class="connect-modal">
+      <div class="connect-content">
+        <div class="connect-header">
+          <h3>Connect with Doctor</h3>
+          <button class="connect-close" onclick="closeConnectModal()">&times;</button>
+        </div>
+        <div id="connectDoctorInfo">
+          <!-- Will be populated by JavaScript -->
+        </div>
+        <div>
+          <div style="font-weight:700;margin-bottom:8px">Describe your problem:</div>
+          <div class="language-selector">
+            <button class="lang-btn active" data-lang="en" onclick="setLanguage(this)">English</button>
+            <button class="lang-btn" data-lang="hi" onclick="setLanguage(this)">हिंदी</button>
+            <button class="lang-btn" data-lang="pa" onclick="setLanguage(this)">ਪੰਜਾਬੀ</button>
+          </div>
+          <textarea id="problemDescription" class="problem-input" placeholder="Please describe your medical problem in detail..."></textarea>
+          <button class="btn" style="width:100%" onclick="submitProblem()">Send Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+/* ---------- Demo data ---------- */
+const topDoctors = [
+  {id:'DOC-100', name:'Dr. Arjun Singh', spec:'Cardiologist', rating:4.9, city:'Patiala'},
+  {id:'DOC-101', name:'Dr. Meera Kapoor', spec:'Dermatologist', rating:4.8, city:'Chandigarh'},
+  {id:'DOC-102', name:'Dr. Rohan Gupta', spec:'General Physician', rating:4.7, city:'Nabha'},
+  {id:'DOC-103', name:'Dr. Simran Kaur', spec:'Gynecologist', rating:4.6, city:'Ludhiana'}
+];
+
+const availableDoctors = [
+  {id:'DOC-102', name:'Dr. Rohan Gupta', spec:'General Physician', online:true, phone:'+91-90000-00001', clinic:'Nabha Health Clinic'},
+  {id:'DOC-110', name:'Dr. Karan Malhotra', spec:'Endocrinologist', online:true, phone:'+91-90000-00002', clinic:'Sunrise Medical'},
+  {id:'DOC-101', name:'Dr. Meera Kapoor', spec:'Dermatologist', online:false, phone:'+91-90000-00003', clinic:'SkinCare Center'},
+];
+
+const visitedDoctors = [
+  {id:'DOC-14237', name:'Dr. Amanpreet Singh', spec:'General Physician', last:'2025-08-15'},
+  {id:'DOC-090', name:'Dr. Jaspreet Kaur', spec:'ENT', last:'2025-06-20'}
+];
+
+const pharmacies = [
+  {name:'Nabha Pharmacy', lat:0, lng:0, meds:['Paracetamol','Ibuprofen']},
+  {name:'HolyMed Pharmacy', lat:0, lng:0, meds:['Omeprazole','Cetirizine']},
+];
+
+// Family members data
+const familyMembers = {
+  harjit: {
+    name: 'Harjit Singh',
+    relation: 'Husband',
+    id: 'PAT-0002',
+    age: 35,
+    avatar: 'HS',
+    medicalSummary: 'No chronic conditions recorded • Allergies: None',
+    recentPrescriptions: [
+      'Atorvastatin 20mg — 2025-07-15',
+      'Metformin 500mg — 2025-06-20'
+    ]
+  },
+  simran: {
+    name: 'Simran Kaur',
+    relation: 'Daughter',
+    id: 'PAT-0003',
+    age: 8,
+    avatar: 'SK',
+    medicalSummary: 'Asthma (mild) • Allergies: Pollen',
+    recentPrescriptions: [
+      'Salbutamol inhaler — 2025-08-05',
+      'Montelukast 5mg — 2025-07-28'
+    ]
+  }
+};
+
+/* ---------- Tab switching ---------- */
+const tabNodes = document.querySelectorAll('.navitem');
+const sections = document.querySelectorAll('.section');
+tabNodes.forEach(node=>{
+  node.addEventListener('click', () => {
+    tabNodes.forEach(n=>n.classList.remove('active'));
+    node.classList.add('active');
+    const tab = node.dataset.tab;
+    sections.forEach(s=>{ s.classList.remove('active'); s.setAttribute('aria-hidden','true') });
+    const target = document.getElementById(tab);
+    if(target){ target.classList.add('active'); target.removeAttribute('aria-hidden') }
+    // small UX: if switching to doctors, re-render lists
+    if(tab === 'doctors') { renderTopDoctors(); renderAvailable(); renderVisited(); }
+    if(tab === 'pharmacies') { renderPharmacies(); }
+  });
+});
+
+/* ---------- Family member panel ---------- */
+function openFamilyMemberPanel(memberId) {
+  const member = familyMembers[memberId];
+  if (!member) return;
+  
+  const panel = document.getElementById('familyMemberPanel');
+  const content = document.getElementById('familyMemberDetails');
+  
+  content.innerHTML = `
+    <div class="family-member-info">
+      <div class="family-member-avatar">${member.avatar}</div>
+      <div class="family-member-details">
+        <div class="family-member-name">${member.name}</div>
+        <div class="family-member-relation">${member.relation} • Age ${member.age}</div>
+        <div class="family-member-id">${member.id} • Nabha, Punjab</div>
+      </div>
+    </div>
+    
+    <div class="family-member-section">
+      <div class="family-member-section-title">Medical Summary</div>
+      <div class="small">${member.medicalSummary}</div>
+    </div>
+    
+    <div class="family-member-section">
+      <div class="family-member-section-title">Recent Prescriptions</div>
+      <ul class="small" style="margin:0 0 0 16px">
+        ${member.recentPrescriptions.map(p => `<li>${p}</li>`).join('')}
+      </ul>
+    </div>
+    
+    <button class="family-member-login-btn" onclick="loginAsFamilyMember('${memberId}')">
+      Login to ${member.name}'s Profile
+    </button>
+  `;
+  
+  panel.classList.add('open');
+  document.body.style.overflow = 'hidden'; // Prevent scrolling when panel is open
+}
+
+function closeFamilyMemberPanel() {
+  const panel = document.getElementById('familyMemberPanel');
+  panel.classList.remove('open');
+  document.body.style.overflow = ''; // Re-enable scrolling
+}
+
+function loginAsFamilyMember(memberId) {
+  const member = familyMembers[memberId];
+  toast(`Logging in as ${member.name}...`);
+  closeFamilyMemberPanel();
+  // In a real app, this would redirect to the family member's profile
+}
+
+// Add click handlers to family member items
+document.querySelectorAll('.family-member-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const memberId = item.dataset.member;
+    openFamilyMemberPanel(memberId);
+  });
+});
+
+// Close panel when clicking outside content
+document.getElementById('familyMemberPanel').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('familyMemberPanel')) {
+    closeFamilyMemberPanel();
+  }
+});
+
+/* ---------- Render hero (top doctors) ---------- */
+function renderTopDoctors(){
+  const container = document.getElementById('topDoctorsHero');
+  container.innerHTML = '';
+  topDoctors.forEach(d=>{
+    const card = document.createElement('div');
+    card.className='hero-card';
+    card.innerHTML = `
+      <div class="photo">${d.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+      <div style="font-weight:800">${d.name}</div>
+      <div class="small muted">${d.spec} • ${d.city}</div>
+      <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+        <div class="rating">★ ${d.rating.toFixed(1)}</div>
+        <div><button class="btn ghost" onclick="openDoctor('${d.id}')">View</button></div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+/* ---------- Available doctors ---------- */
+let activeDoctorFilter = 'all';
+function setDoctorFilter(el){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  activeDoctorFilter = el.dataset.filter;
+  renderAvailable();
+}
+
+function renderAvailable(){
+  const q = document.getElementById('docSearch').value.trim().toLowerCase();
+  const list = document.getElementById('availableList');
+  list.innerHTML = '';
+  const filtered = availableDoctors.filter(d=>{
+    if(activeDoctorFilter === 'online' && !d.online) return false;
+    if(q && !(d.name.toLowerCase().includes(q) || d.spec.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  if(filtered.length === 0){
+    list.innerHTML = '<div class="small muted">No doctors match your search.</div>';
+    return;
+  }
+  filtered.forEach(d=>{
+    const row = document.createElement('div');
+    row.className='doctor-row';
+    row.innerHTML = `
+      <div class="doctor-avatar">${d.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+      <div class="doctor-info">
+        <div style="font-weight:800">${d.name}</div>
+        <div class="small muted">${d.spec} • ${d.clinic}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+        <div class="status ${d.online? '' : 'busy'}">${d.online? 'Online' : 'Busy'}</div>
+        <div class="actions">
+          <button class="btn" onclick="openConnectModal('${d.id}', '${d.name}')">Connect</button>
+          <button class="btn ghost" onclick="openDoctor('${d.id}')">Details</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+/* ---------- Visited doctors ---------- */
+function renderVisited(){
+  const container = document.getElementById('visitedList');
+  container.innerHTML = '';
+  visitedDoctors.forEach(v=>{
+    const el = document.createElement('div');
+    el.className='visited-item';
+    el.innerHTML = `
+      <div style="width:48px;height:48px;border-radius:8px;background:#eaf7f0;display:grid;place-items:center;font-weight:700;color:var(--brand)">${v.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+      <div style="flex:1">
+        <div style="font-weight:800">${v.name}</div>
+        <div class="small muted">${v.spec} • last: ${v.last}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn ghost" onclick="openDoctor('${v.id}')">View</button>
+        <button class="btn" onclick="openConnectModal('${v.id}', '${v.name}')">Connect</button>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+}
+
+/* ---------- Doctor drawer ---------- */
+const drawer = document.getElementById('docDrawer');
+function openDoctor(id){
+  // find doctor in any list
+  const doc = [...topDoctors, ...availableDoctors, ...visitedDoctors].find(x=>x.id === id) || { id, name:'Unknown', spec:'—' };
+  const content = document.getElementById('drawerContent');
+  content.innerHTML = `
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
+      <div style="width:80px;height:80px;border-radius:12px;background:#eaf7f0;display:grid;place-items:center;font-weight:800;color:var(--brand)">
+        ${doc.name ? doc.name.split(' ').map(w=>w[0]).slice(0,2).join('') : 'DR'}
+      </div>
+      <div>
+        <div style="font-weight:900">${doc.name}</div>
+        <div class="small muted">${doc.spec || 'Specialist'}</div>
+        <div class="small muted">ID: ${doc.id}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:12px"><strong>Clinic</strong><div class="small muted">${doc.clinic || 'Main Clinic, Nabha'}</div></div>
+    <div style="margin-bottom:12px"><strong>About</strong><div class="small muted">Experienced ${doc.spec || 'physician'} with patient-first approach. Accepts teleconsults and in-person appointments.</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" onclick="openConnectModal('${doc.id}', '${doc.name}')">Connect</button>
+    </div>
+    
+  `;
+  drawer.classList.add('open');
+  drawer.setAttribute('aria-hidden','false');
+}
+function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
+
+/* ---------- Connect to doctor modal ---------- */
+let currentLanguage = 'en';
+let currentDoctorId = '';
+let currentDoctorName = '';
+
+function openConnectModal(doctorId, doctorName) {
+  currentDoctorId = doctorId;
+  currentDoctorName = doctorName;
+  
+  const modal = document.getElementById('connectModal');
+  const doctorInfo = document.getElementById('connectDoctorInfo');
+  
+  doctorInfo.innerHTML = `
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:15px">
+      <div style="width:60px;height:60px;border-radius:10px;background:#eaf7f0;display:grid;place-items:center;font-weight:800;color:var(--brand)">
+        ${doctorName.split(' ').map(w=>w[0]).slice(0,2).join('')}
+      </div>
+      <div>
+        <div style="font-weight:800">${doctorName}</div>
+        <div class="small muted">ID: ${doctorId}</div>
+      </div>
+    </div>
+  `;
+  
+  // Reset language and text
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelector('.lang-btn[data-lang="en"]').classList.add('active');
+  currentLanguage = 'en';
+  document.getElementById('problemDescription').value = '';
+  document.getElementById('problemDescription').placeholder = 'Please describe your medical problem in detail...';
+  
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeConnectModal() {
+  const modal = document.getElementById('connectModal');
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function setLanguage(button) {
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+  currentLanguage = button.dataset.lang;
+  
+  // Update placeholder based on language
+  const textarea = document.getElementById('problemDescription');
+  if (currentLanguage === 'hi') {
+    textarea.placeholder = 'कृपया अपनी चिकित्सा समस्या का विस्तार से वर्णन करें...';
+  } else if (currentLanguage === 'pa') {
+    textarea.placeholder = 'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਮੈਡੀਕਲ ਸਮੱਸਿਆ ਦਾ ਵਿਸਤਾਰ ਨਾਲ ਵਰਣਨ ਕਰੋ...';
+  } else {
+    textarea.placeholder = 'Please describe your medical problem in detail...';
+  }
+}
+
+function submitProblem() {
+  const problemText = document.getElementById('problemDescription').value.trim();
+  if (!problemText) {
+    toast('Please describe your problem before submitting');
+    return;
+  }
+  
+  // In a real app, this would send the request to the server
+  toast(`Request sent to ${currentDoctorName}. They will contact you soon.`);
+  closeConnectModal();
+}
+
+// Close modal when clicking outside content
+document.getElementById('connectModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('connectModal')) {
+    closeConnectModal();
+  }
+});
+
+/* ---------- Voice-enabled Symptom Checker ---------- */
+let recognition = null;
+let isRecording = false;
+let recordingLanguage = 'en';
+
+function setRecordingLanguage(button) {
+  document.querySelectorAll('.language-selector-symptom .lang-btn').forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+  recordingLanguage = button.dataset.lang;
+}
+
+function startVoiceRecording() {
+  // Show the voice recorder interface
+  document.getElementById('voiceRecorder').style.display = 'flex';
+  document.getElementById('voiceSymptom').style.display = 'none';
+  
+  // Check if browser supports speech recognition
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    toast('Voice recognition is not supported in this browser.');
+    return;
+  }
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  
+  // Set language based on selection
+  if (recordingLanguage === 'hi') {
+    recognition.lang = 'hi-IN'; // Hindi (India)
+  } else if (recordingLanguage === 'pa') {
+    recognition.lang = 'pa-IN'; // Punjabi (India)
+  } else {
+    recognition.lang = 'en-IN'; // English (India)
+  }
+  
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  
+  recognition.onstart = function() {
+    isRecording = true;
+    document.getElementById('recordingStatus').style.display = 'flex';
+    document.getElementById('stopRecordingBtn').style.display = 'block';
+    toast('Recording started... Speak now');
+  };
+  
+  recognition.onresult = function(event) {
+    let interimTranscript = '';
+    let finalTranscript = '';
+    
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        finalTranscript += transcript;
+      } else {
+        interimTranscript += transcript;
+      }
+    }
+    
+    // Update textarea with interim results
+    document.getElementById('symptomText').value = finalTranscript + interimTranscript;
+  };
+  
+  recognition.onerror = function(event) {
+    console.error('Speech recognition error', event.error);
+    toast('Error: ' + event.error);
+    stopVoiceRecording();
+  };
+  
+  recognition.onend = function() {
+    if (isRecording) {
+      // If recording ended unexpectedly, try to restart
+      try {
+        recognition.start();
+      } catch (e) {
+        stopVoiceRecording();
+      }
+    }
+  };
+  
+  try {
+    recognition.start();
+  } catch (e) {
+    toast('Error starting voice recognition: ' + e.message);
+  }
+}
+
+function stopVoiceRecording() {
+  if (recognition && isRecording) {
+    isRecording = false;
+    recognition.stop();
+    document.getElementById('recordingStatus').style.display = 'none';
+    document.getElementById('stopRecordingBtn').style.display = 'none';
+    
+    // Show translation status
+    document.getElementById('translationStatus').style.display = 'block';
+    
+    // If not English, simulate translation (in a real app, this would call a translation API)
+    if (recordingLanguage !== 'en') {
+      setTimeout(() => {
+        translateSymptomsToEnglish();
+      }, 1500);
+    } else {
+      // If already English, just run the symptom analysis
+      setTimeout(() => {
+        document.getElementById('translationStatus').style.display = 'none';
+        runSymptom();
+        cancelRecording();
+      }, 1000);
+    }
+  }
+}
+
+function cancelRecording() {
+  if (recognition && isRecording) {
+    recognition.stop();
+  }
+  isRecording = false;
+  document.getElementById('voiceRecorder').style.display = 'none';
+  document.getElementById('voiceSymptom').style.display = 'block';
+  document.getElementById('recordingStatus').style.display = 'none';
+  document.getElementById('stopRecordingBtn').style.display = 'none';
+  document.getElementById('translationStatus').style.display = 'none';
+}
+
+function translateSymptomsToEnglish() {
+  const symptomText = document.getElementById('symptomText').value;
+  
+  // In a real application, this would call a translation API
+  // For demo purposes, we'll simulate translation with some predefined examples
+  
+  let translatedText = '';
+  
+  if (recordingLanguage === 'hi') {
+    // Simulate Hindi to English translation
+    if (symptomText.includes('बुखार') || symptomText.includes('ताप')) {
+      translatedText = 'I have fever and headache since morning.';
+    } else if (symptomText.includes('खांसी') || symptomText.includes('जुखाम')) {
+      translatedText = 'I have cough and cold with chest congestion.';
+    } else if (symptomText.includes('पेट') || symptomText.includes('दर्द')) {
+      translatedText = 'Stomach pain and loose motions since yesterday.';
+    } else {
+      // Generic translation simulation
+      translatedText = 'I am experiencing ' + symptomText + '. This started a few days ago.';
+    }
+  } else if (recordingLanguage === 'pa') {
+    // Simulate Punjabi to English translation
+    if (symptomText.includes('ਬੁਖਾਰ') || symptomText.includes('ਤਾਪ')) {
+      translatedText = 'I have high fever and body aches.';
+    } else if (symptomText.includes('ਖਾਂਸੀ') || symptomText.includes('ਜੁਕਾਮ')) {
+      translatedText = 'Dry cough and running nose for three days.';
+    } else if (symptomText.includes('ਪੇਟ') || symptomText.includes('ਦਰਦ')) {
+      translatedText = 'Severe stomach pain with vomiting.';
+    } else {
+      // Generic translation simulation
+      translatedText = 'I have been feeling ' + symptomText + ' for some time now.';
+    }
+  }
+  
+  // Update the textarea with the translated text
+  document.getElementById('symptomText').value = translatedText;
+  
+  // Hide translation status and run symptom analysis
+  document.getElementById('translationStatus').style.display = 'none';
+  runSymptom();
+  cancelRecording();
+  
+  toast('Symptoms translated to English successfully');
+}
+
+/* ---------- Symptom analyzer demo ---------- */
+function runSymptom(){
+  const txt = document.getElementById('symptomText').value.trim();
+  if(!txt){ toast('Please describe your symptoms'); return; }
+  const res = document.getElementById('symptomResult');
+  const outcome = document.getElementById('symptomOutcome');
+  // extremely simple demo rules
+  const t = txt.toLowerCase();
+  if(t.includes('fever')) outcome.textContent = 'Like signs of fever. Suggest paracetamol 500mg, rest & hydrate. If temp > 102°F, book consult.';
+  else if(t.includes('cough')) outcome.textContent = 'Cough symptoms—keep hydrated. If shortness of breath, seek immediate care.';
+  else outcome.textContent = 'Not enough info — recommend a short consult. You can request a chat or video from the Doctors tab.';
+  res.style.display='block';
+  res.scrollIntoView({behavior:'smooth'});
+}
+
+/* ---------- Pharmacies rendering demo ---------- */
+let map, userMarker, pharmacyMarkers = [];
+
+function initPharmacyMap() {
+  const box = document.getElementById('pharmMap');
+  box.innerHTML = ''; // Clear placeholder
+
+  // Initialize map centered roughly in Nabha
+  map = L.map('pharmMap').setView([30.3800, 76.1140], 13); 
+
+  // Add OSM tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // Ask for user location
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      map.setView([lat, lng], 15);
+
+      userMarker = L.marker([lat,lng], {title:"You are here"}).addTo(map)
+        .bindPopup("You are here").openPopup();
+
+      // Render pharmacies near user
+      renderPharmaciesOnMap(lat, lng);
+    }, err => {
+      toast("Location permission denied. Showing default view.");
+      renderPharmaciesOnMap(30.3800, 76.1140);
+    });
+  } else {
+    toast("Geolocation not supported. Showing default view.");
+    renderPharmaciesOnMap(30.3800, 76.1140);
+  }
+}
+
+function renderPharmaciesOnMap(lat, lng) {
+  // Clear previous markers
+  pharmacyMarkers.forEach(m => map.removeLayer(m));
+  pharmacyMarkers = [];
+
+  const q = document.getElementById('medSearch').value.trim().toLowerCase();
+
+  pharmacies.forEach(p => {
+    // Fake randomize lat/lng nearby for demo
+    const plat = lat + (Math.random()-0.5)/500;
+    const plng = lng + (Math.random()-0.5)/500;
+
+    // Check medicine filter
+    const hasMed = !q || p.meds.join(' ').toLowerCase().includes(q);
+
+    const marker = L.marker([plat, plng], {title: p.name}).addTo(map);
+    marker.bindPopup(`
+      <div style="font-weight:800">${p.name}</div>
+      <div class="small">Medicines: ${hasMed ? p.meds.join(', ') : 'Not available'}</div>
+    `);
+    pharmacyMarkers.push(marker);
+  });
+}
+
+// Update map when searching for a medicine
+document.getElementById('medSearch').addEventListener('input', () => {
+  if(map && userMarker){
+    const pos = userMarker.getLatLng();
+    renderPharmaciesOnMap(pos.lat, pos.lng);
+  }
+});
+
+// Initialize map on tab open
+document.querySelector('.navitem[data-tab="pharmacies"]').addEventListener('click', () => {
+  setTimeout(initPharmacyMap, 300); // Delay to ensure tab is visible
+});
+
+/* ---------- Toast utility ---------- */
+function toast(msg){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style,{position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'20px',background:'#223729',color:'#fff',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 8px 20px rgba(0,0,0,.2)',zIndex:120,opacity:0,transition:'250ms'});
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>t.style.opacity=1);
+  setTimeout(()=>{t.style.opacity=0; setTimeout(()=>t.remove(),300)},1600);
+}
+
+/* ---------- Init default render ---------- */
+renderTopDoctors();
+renderAvailable();
+renderVisited();
+renderPharmacies();
+
+/* small helper to open tab from links */
+function openTab(tabId){
+  document.querySelectorAll('.navitem').forEach(n=>n.classList.remove('active'));
+  const node = document.querySelector(`.navitem[data-tab="${tabId}"]`);
+  if(node) node.classList.add('active');
+  sections.forEach(s=>s.classList.remove('active'));
+  const target = document.getElementById(tabId);
+  if(target) target.classList.add('active');
+}
+
+let clinicMap, userClinicMarker, clinicMarkers = [];
+
+function initClinicMap() {
+  const box = document.getElementById('clinicMap');
+  box.innerHTML = ''; // Clear old content
+
+  // Initialize map with rough center
+  clinicMap = L.map('clinicMap').setView([30.3800, 76.1140], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(clinicMap);
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      clinicMap.setView([lat, lng], 15);
+
+      userClinicMarker = L.marker([lat,lng], {title:"You are here"}).addTo(clinicMap)
+        .bindPopup("You are here").openPopup();
+
+      renderClinicsOnMap(lat, lng);
+    }, err => {
+      toast("Location permission denied. Showing default view.");
+      renderClinicsOnMap(30.3800, 76.1140);
+    });
+  } else {
+    toast("Geolocation not supported. Showing default view.");
+    renderClinicsOnMap(30.3800, 76.1140);
+  }
+}
+
+function renderClinicsOnMap(lat, lng) {
+  clinicMarkers.forEach(m => clinicMap.removeLayer(m));
+  clinicMarkers = [];
+
+  clinics.forEach(c => {
+    const clat = lat + (Math.random()-0.5)/500; // demo nearby
+    const clng = lng + (Math.random()-0.5)/500;
+
+    const marker = L.marker([clat, clng], {title: c.name}).addTo(clinicMap);
+
+    // Calculate distance & travel time (approx, using straight line for demo)
+    const distance = getDistanceFromLatLonInKm(lat, lng, clat, clng).toFixed(2);
+    const travelTime = (distance/40*60).toFixed(0); // assuming avg 40 km/h
+
+    marker.bindPopup(`
+      <div style="font-weight:800">${c.name}</div>
+      <div class="small">Distance: ${distance} km</div>
+      <div class="small">Estimated travel time: ${travelTime} min</div>
+    `);
+
+    clinicMarkers.push(marker);
+  });
+}
+
+// Haversine formula for distance calculation
+function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+  const R = 6371; // km
+  const dLat = deg2rad(lat2-lat1);
+  const dLon = deg2rad(lon2-lon1);
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  return R * c;
+}
+
+function deg2rad(deg) { return deg * (Math.PI/180); }
+
+// Initialize map when doctor tab opens
+document.querySelector('.navitem[data-tab="doctors"]').addEventListener('click', () => {
+  setTimeout(initClinicMap, 300); // wait for tab render
+});
+
+function previewImage(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById("profile-img").src = e.target.result;
+      document.getElementById("profile-img").style.display = "block";
+      document.getElementById("profile-initials").style.display = "none";
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+//patient emergency sos
+function requestAmbulance() {
+  toast("Ambulance request sent. Nearby service alerted.");
+  // Call your API: POST /api/sos/ambulance
+}
+
+function alertDoctor() {
+  toast("Doctor notified of emergency.");
+  // API: POST /api/sos/doctor
+}
+
+function notifyFamily() {
+  toast("Family members have been notified.");
+  // API: Notify emergency contacts
+}
+
+function shareLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      toast("Live location shared with emergency team.");
+      console.log("Lat:", pos.coords.latitude, "Lng:", pos.coords.longitude);
+      // Send to backend API
+    });
+  } else {
+    toast("Location not supported on this device.");
+  }
+}
+
+function openFirstAid() {
+  toast("Opening first aid guide...");
+}
+
+function emergencyHotline() {
+  window.location.href = "tel:108";
+}
+
+function uploadEmergencyDocs() {
+  toast("Upload reports for emergency team...");
+}
+
+function setEmergencyContacts() {
+  toast("Manage your emergency contacts...");
+}
+
+// Add clinics data for the map
+const clinics = [
+  {name:'Nabha Health Clinic', lat:30.3750, lng:76.1500},
+  {name:'Sunrise Medical', lat:30.3850, lng:76.1200},
+  {name:'SkinCare Center', lat:30.3700, lng:76.1300},
+];
+</script>
+</body>
+</html>

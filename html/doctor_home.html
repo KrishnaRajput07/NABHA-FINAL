@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>NabhaCare — Doctor Dashboard</title>
+<<<<<<< HEAD
+  <link rel="stylesheet" href="doctor_home.css">
+=======
+  <link rel="stylesheet" href="/css/doctor.css">
+  <style>
+  
+  </style>
+>>>>>>> c98e80f (Your commit message here)
+</head>
+<body>
+  <!-- NAV -->
+  <header class="nav" role="banner">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">💚</div>
+      <div>
+        <div style="font-weight:900">NabhaCare</div>
+        <small style="opacity:.9">Telemedicine for Punjab</small>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+<<<<<<< HEAD
+      <span class="chip">Dr. <strong id="docNameTop">Sneha Singh</strong></span>
+=======
+      <span class="chip">Dr. <strong id="docNameTop">Amanpreet Singh</strong></span>
+>>>>>>> c98e80f (Your commit message here)
+      <span class="chip hide-md">Doc ID: <strong id="docIdTop">DOC-14237</strong></span>
+      <span class="chip hide-md">Speciality: General Physician</span>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="side" role="navigation" aria-label="Sidebar">
+    <h3 class="hide-md">Dashboard</h3>
+    <nav class="navlist" id="sidebar">
+      <a class="navitem active" data-tab="profile">👤 <span class="hide-md">Profile</span></a>
+      <a class="navitem" data-tab="patients">🧑‍🤝‍🧑 <span class="hide-md">Patients</span></a>
+      <a class="navitem" data-tab="stock">💊 <span class="hide-md">Medicine Stock</span></a>
+      <a class="navitem" data-tab="Report">🗂️ <span class="hide-md">Patient Log</span></a>
+      <div class="divider hide-md"></div>
+      <a class="navitem" data-tab="settings">⚙️ <span class="hide-md">Settings</span></a>
+      <a class="navitem" data-tab="help">🆘 <span class="hide-md">Help</span></a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" role="main">
+    <!-- PROFILE -->
+
+
+    <section id="profile" class="section">
+      <h2 class="title">Doctor Profile</h2>
+      <div class="cards">
+        <div class="card" style="grid-column: span 5">
+          <div style="display:flex; gap:12px; align-items:center; margin-bottom:10px">
+            <div class="avatar" aria-hidden="true">AS</div>
+            <div>
+<<<<<<< HEAD
+              <div style="font-weight:800; font-size:1.1rem" id="docName">Dr. Sneha Singh</div>
+=======
+              <div style="font-weight:800; font-size:1.1rem" id="docName">Dr. Amanpreet Singh</div>
+>>>>>>> c98e80f (Your commit message here)
+              <div class="muted">General Physician — Nabha</div>
+            </div>
+            <div class="right badge ok">ID: <span id="docId">DOC-14237</span></div>
+          </div>
+          <div class="sep"></div>
+          <div class="grid-2">
+            <div class="stat"><span class="dot" style="background:var(--ok)"></span> Online Consults Today: <strong style="margin-left:8px">14</strong></div>
+            <div class="stat"><span class="dot" style="background:var(--accent)"></span> Avg. Wait Time: <strong style="margin-left:8px">06 min</strong></div>
+            <div class="stat"><span class="dot" style="background:var(--brand)"></span> Patient Rating: <strong style="margin-left:8px">4.8/5</strong></div>
+            <div class="stat"><span class="dot" style="background:var(--warn)"></span> Pending eRx: <strong style="margin-left:8px">3</strong></div>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column: span 4">
+          <div style="display:flex; justify-content:space-between; align-items:center">
+            <div>
+              <div style="font-weight:800">Availability</div>
+              <div class="sub">Control your teleconsultation status</div>
+            </div>
+            <label>
+              <input type="checkbox" class="switch" id="toggleAvail" checked aria-label="Toggle availability">
+            </label>
+          </div>
+          <div class="sep"></div>
+          <div class="badge ok" id="availText">Available for Consults</div>
+        </div>
+
+        <div class="card" style="grid-column: span 3">
+          <div style="font-weight:800; margin-bottom:8px">Quick Actions</div>
+          <div class="actions">
+            <button class="btn line" onclick="toast('Create new e-Prescription')">📝 e-Prescription</button>
+            <button class="btn line" onclick="toast('Start Instant Video Room')">🎥 Instant Room</button>
+            <button class="btn line" onclick="toast('Share payment link')">💳 Payment Link</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<<<<<<< HEAD
+    <section id="detailedProfile" class="section">
+      <h2 class="title">Detailed Profile</h2>
+      <div class="card detailed-profile">
+        <div class="profile-flex">
+    
+          <!-- Left: Large Profile Image -->
+          <div class="profile-photo-container">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjkwIiBjeT0iNzAiIHI9IjMwIiBmaWxsPSIjRENEQ0RDIi8+CjxwYXRoIGQ9Ik0zMCAxNDBDMzAgMTI4Ljk1NCAzOC45NTQzIDEyMCA1MCAxMjBIMTMwQzE0MS4wNDYgMTIwIDE1MCAxMjguOTU0IDE1MCAxNDBWMjAwSDMwVjE0MFoiIGZpbGw9IiNEQ0RDREMiLz4KPHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIwIDIwQzIyLjc2MTQgMjAgMjUgMTcuNzYxNCAyNSAxNUMyNSAxMi4yMzg2IDIyLjc2MTQgMTAgMjAgMTBDMTcuMjM4NiAxMCAxNSAxMi4yMzg2IDE1IDE1QzE1IDE3Ljc2MTQgMTcuMjM4NiAyMCAyMCAyMFoiIGZpbGw9IiM5OTk5OTkiLz4KPC9zdmc+Cjwvc3ZnPgo=" 
+                 alt="Doctor photo" 
+                 class="profile-photo" 
+                 id="doctorPhoto">
+            <div class="doc-id muted">ID: DOC-14237</div>
+    
+            <!-- Hidden File Input -->
+            <input type="file" id="uploadPhoto" accept="image/*" hidden>
+            <button class="btn small upload-btn" onclick="document.getElementById('uploadPhoto').click()">Change Photo</button>
+          </div>
+    
+          <!-- Right: Info -->
+          <div class="profile-info">
+            <h3 class="doc-name">Dr. Sneha Singh</h3>
+            <div class="muted sub-role">General Physician — Nabha</div>
+    
+            <!-- Grid for details -->
+            <div class="grid-2 details">
+              <div><strong>Specialist in:</strong> Family Medicine, Preventive Care</div>
+              <div><strong>Experience:</strong> 12 Years</div>
+              <div><strong>Age:</strong> 42</div>
+              <div><strong>Gender:</strong> Male</div>
+              <div><strong>Education:</strong> MBBS, MD (General Medicine)</div>
+              <div><strong>Languages:</strong> English, Hindi, Punjabi</div>
+              <div><strong>Clinic Location:</strong> NabhaCare Clinic, Nabha, Punjab</div>
+              <div><strong>Clinic Hours:</strong> Mon–Sat, 9:00 AM – 6:00 PM</div>
+              <div><strong>Contact:</strong> +91-98765-43210</div>
+              <div><strong>Email:</strong> amanpreet.singh@nabhacare.example</div>
+            </div>
+    
+            <!-- Bio -->
+            <div class="sep"></div>
+            <div class="bio">
+              <h4>Professional Bio</h4>
+              <p>
+                Dr. Sneha Singh is a trusted General Physician with over a decade of experience 
+                in treating patients with care and empathy. He specializes in preventive health, 
+                lifestyle management, and family medicine. Passionate about rural healthcare, he 
+                actively contributes to community health camps and telemedicine services in Punjab.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+=======
+   <!-- Detailed Profile Section -->
+<section id="detailedProfile" class="section">
+  <h2 class="title">Detailed Profile</h2>
+  <div class="card detailed-profile">
+    <div class="profile-flex">
+
+      <!-- Left: Large Profile Image -->
+      <div class="profile-photo-container">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjkwIiBjeT0iNzAiIHI9IjMwIiBmaWxsPSIjRENEQ0RDIi8+CjxwYXRoIGQ9Ik0zMCAxNDBDMzAgMTI4Ljk1NCAzOC45NTQzIDEyMCA1MCAxMjBIMTMwQzE0MS4wNDYgMTIwIDE1MCAxMjguOTU0IDE1MCAxNDBWMjAwSDMwVjE0MFoiIGZpbGw9IiNEQ0RDREMiLz4KPHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIwIDIwQzIyLjc2MTQgMjAgMjUgMTcuNzYxNCAyNSAxNUMyNSAxMi4yMzg2IDIyLjc2MTQgMTAgMjAgMTBDMTcuMjM4NiAxMCAxNSAxMi4yMzg2IDE1IDE1QzE1IDE3Ljc2MTQgMTcuMjM4NiAyMCAyMCAyMFoiIGZpbGw9IiM5OTk5OTkiLz4KPC9zdmc+Cjwvc3ZnPgo=" 
+             alt="Doctor photo" 
+             class="profile-photo" 
+             id="doctorPhoto">
+        <div class="doc-id muted">ID: DOC-14237</div>
+
+        <!-- Hidden File Input -->
+        <input type="file" id="uploadPhoto" accept="image/*" hidden>
+        <button class="btn small upload-btn" onclick="document.getElementById('uploadPhoto').click()">Change Photo</button>
+      </div>
+
+      <!-- Right: Info -->
+      <div class="profile-info">
+        <h3 class="doc-name">Dr. Amanpreet Singh</h3>
+        <div class="muted sub-role">General Physician — Nabha</div>
+
+        <!-- Grid for details -->
+        <div class="grid-2 details">
+          <div><strong>Specialist in:</strong> Family Medicine, Preventive Care</div>
+          <div><strong>Experience:</strong> 12 Years</div>
+          <div><strong>Age:</strong> 42</div>
+          <div><strong>Gender:</strong> Male</div>
+          <div><strong>Education:</strong> MBBS, MD (General Medicine)</div>
+          <div><strong>Languages:</strong> English, Hindi, Punjabi</div>
+          <div><strong>Clinic Location:</strong> NabhaCare Clinic, Nabha, Punjab</div>
+          <div><strong>Clinic Hours:</strong> Mon–Sat, 9:00 AM – 6:00 PM</div>
+          <div><strong>Contact:</strong> +91-98765-43210</div>
+          <div><strong>Email:</strong> amanpreet.singh@nabhacare.example</div>
+        </div>
+
+        <!-- Bio -->
+        <div class="sep"></div>
+        <div class="bio">
+          <h4>Professional Bio</h4>
+          <p>
+            Dr. Amanpreet Singh is a trusted General Physician with over a decade of experience 
+            in treating patients with care and empathy. He specializes in preventive health, 
+            lifestyle management, and family medicine. Passionate about rural healthcare, he 
+            actively contributes to community health camps and telemedicine services in Punjab.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+>>>>>>> c98e80f (Your commit message here)
+
+    <!-- PATIENTS -->
+    <section id="patients" class="section hidden">
+      <h2 class="title">Patients</h2>
+      <div class="toolbar card" style="margin-bottom:12px">
+        <input id="search" class="input" placeholder="Search by name or ID"/>
+        <select id="filterStatus" class="select">
+          <option value="all">All statuses</option>
+          <option value="waiting">Waiting</option>
+          <option value="in-consult">In consult</option>
+          <option value="completed">Completed</option>
+        </select>
+        <select id="filterAge" class="select">
+          <option value="any">Any age</option>
+          <option value="0-18">0–18</option>
+          <option value="19-40">19–40</option>
+          <option value="41-60">41–60</option>
+          <option value="60+">60+</option>
+        </select>
+        <button class="btn right" onclick="exportPatients()">⬇️ Export</button>
+      </div>
+
+      <div id="patientsGrid" class="patients"></div>
+    </section>
+
+    <!-- STOCK -->
+    <section id="stock" class="section hidden">
+      <h2 class="title">Medicine Stock</h2>
+      <div class="stock-toolbar card">
+        <input id="stockSearch" class="input" placeholder="Search medicine or salt"/>
+        <button class="pill active" data-stock="all">All</button>
+        <button class="pill" data-stock="low">Low</button>
+        <button class="pill" data-stock="out">Out</button>
+        <button class="btn right" onclick="toast('Syncing with pharmacy inventory…')">⟳ Sync</button>
+      </div>
+      <div class="card" style="padding:0">
+        <table>
+          <thead>
+            <tr>
+              <th>Medicine</th>
+              <th>Salt</th>
+              <th>Qty</th>
+              <th>Expiry</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="stockBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+<section id="settings" class="section hidden">
+  <h2 class="title">Settings</h2>
+
+  <!-- Notifications -->
+  <div class="card" style="padding:16px; margin-bottom:16px;">
+    <div style="font-weight:800; font-size:1.1rem; margin-bottom:12px;">Notifications</div>
+    <div class="stat" style="margin-bottom:10px;">
+      <input type="checkbox" class="switch" checked style="margin-right:8px"> App & Email updates
+    </div>
+    <div class="stat" style="margin-bottom:10px;">
+      <input type="checkbox" class="switch" style="margin-right:8px"> Patient appointment reminders
+    </div>
+    <div class="stat">
+      <input type="checkbox" class="switch" checked style="margin-right:8px"> Low stock alerts
+    </div>
+  </div>
+
+  <!-- Profile Preferences -->
+  <div class="card" style="padding:16px; margin-bottom:16px;">
+    <div style="font-weight:800; font-size:1.1rem; margin-bottom:12px;">Profile Preferences</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <label style="display:flex; flex-direction:column;">
+        <span style="font-size:0.9rem; font-weight:600; margin-bottom:4px;">Display Name</span>
+        <input type="text" value="Dr. Anjali Sharma" class="input" style="padding:8px; border:1px solid #ddd; border-radius:8px;">
+      </label>
+      <label style="display:flex; flex-direction:column;">
+        <span style="font-size:0.9rem; font-weight:600; margin-bottom:4px;">Specialty</span>
+        <input type="text" value="Cardiologist" class="input" style="padding:8px; border:1px solid #ddd; border-radius:8px;">
+      </label>
+      <label style="display:flex; flex-direction:column;">
+        <span style="font-size:0.9rem; font-weight:600; margin-bottom:4px;">Language</span>
+        <select class="input" style="padding:8px; border:1px solid #ddd; border-radius:8px;">
+          <option>English</option>
+          <option>हिंदी</option>
+          <option>ਪੰਜਾਬੀ</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <!-- Availability & Schedule -->
+  <div class="card" style="padding:16px; margin-bottom:16px;">
+    <div style="font-weight:800; font-size:1.1rem; margin-bottom:12px;">Availability & Schedule</div>
+    <label class="stat" style="margin-bottom:10px;">
+      <input type="checkbox" class="switch" checked style="margin-right:8px"> Accepting new patients
+    </label>
+    <label class="stat" style="margin-bottom:10px;">
+      Consultation Duration: 
+      <select style="margin-left:8px; padding:6px; border:1px solid #ddd; border-radius:6px;">
+        <option>15 min</option>
+        <option>20 min</option>
+        <option>30 min</option>
+      </select>
+    </label>
+    <label class="stat">
+      Weekly Off: 
+      <select style="margin-left:8px; padding:6px; border:1px solid #ddd; border-radius:6px;">
+        <option>Sunday</option>
+        <option>Saturday</option>
+        <option>Friday</option>
+      </select>
+    </label>
+  </div>
+
+  <!-- Clinic Info -->
+  <div class="card" style="padding:16px;">
+    <div style="font-weight:800; font-size:1.1rem; margin-bottom:12px;">Clinic Information</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <label style="display:flex; flex-direction:column;">
+        <span style="font-size:0.9rem; font-weight:600; margin-bottom:4px;">Clinic Address</span>
+        <textarea rows="2" class="input" style="padding:8px; border:1px solid #ddd; border-radius:8px;">Nabha, Punjab</textarea>
+      </label>
+      <label style="display:flex; flex-direction:column;">
+        <span style="font-size:0.9rem; font-weight:600; margin-bottom:4px;">Contact Number</span>
+        <input type="text" value="+91 9876543210" class="input" style="padding:8px; border:1px solid #ddd; border-radius:8px;">
+      </label>
+    </div>
+  </div>
+</section>
+
+
+<!-- PATIENT LOG / REPORTS -->
+<!-- PATIENT LOG / REPORTS -->
+<section id="Report" class="section hidden">
+  <h2 class="title">Patient Log & Records</h2>
+  
+  <div class="toolbar card" style="margin-bottom:12px">
+    <input id="reportSearch" class="input" placeholder="Search by patient name or ID"/>
+    <select id="filterReportType" class="select">
+      <option value="all">All report types</option>
+      <option value="consultation">Consultation Notes</option>
+      <option value="lab">Lab Reports</option>
+      <option value="prescription">Prescriptions</option>
+      <option value="imaging">Imaging Reports</option>
+    </select>
+    <select id="filterDate" class="select">
+      <option value="all">All dates</option>
+      <option value="today">Today</option>
+      <option value="week">This Week</option>
+      <option value="month">This Month</option>
+    </select>
+    <button class="btn" onclick="openAddPatientModal()">➕ Add Patient</button>
+    <button class="btn right" onclick="exportAllPatients()">⬇️ Export All</button>
+  </div>
+
+  <div class="card" style="padding:0">
+    <table>
+      <thead>
+        <tr>
+          <th>Patient</th>
+          <th>Report Type</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Blockchain</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="reportBody">
+        <!-- Data will be populated by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ADD PATIENT MODAL -->
+<div class="modal" id="addPatientModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Add New Patient</h3>
+      <button class="modal-close" onclick="closeModal('addPatientModal')">&times;</button>
+    </div>
+    <form id="patientForm" onsubmit="addPatient(event)">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" name="name" required>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Age</label>
+          <input type="number" class="form-input" name="age" min="0" max="120" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select class="form-input" name="gender" required>
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" class="form-input" name="phone" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Patient ID</label>
+        <input type="text" class="form-input" name="patientId" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Upload Medical Documents</label>
+        <div class="file-upload-container">
+          <input type="file" id="medicalFiles" class="file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" hidden>
+          <label for="medicalFiles" class="file-upload-label">
+            <span class="file-upload-icon">📁</span>
+            <span class="file-upload-text">Choose files or drag them here</span>
+          </label>
+          <div id="fileList" class="file-list"></div>
+        </div>
+        <div class="file-types-hint">
+          Accepted formats: PDF, Word, JPG, PNG (Max 10MB each)
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button type="button" class="btn line" onclick="closeModal('addPatientModal')">Cancel</button>
+        <button type="submit" class="btn">Add Patient</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- PATIENT DETAILS MODAL -->
+<div class="modal" id="patientDetailsModal">
+  <div class="modal-content" style="max-width: 800px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="detailsModalTitle">Patient Details</h3>
+      <button class="modal-close" onclick="closeModal('patientDetailsModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid-2">
+        <div>
+          <h4>Basic Information</h4>
+          <p><strong>Name:</strong> <span id="detailName"></span></p>
+          <p><strong>Age:</strong> <span id="detailAge"></span></p>
+          <p><strong>Gender:</strong> <span id="detailGender"></span></p>
+          <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
+          <p><strong>Patient ID:</strong> <span id="detailPatientId"></span></p>
+        </div>
+        <div>
+          <h4>Medical Information</h4>
+          <p><strong>Chief Complaint:</strong> <span id="detailComplaint"></span></p>
+          <p><strong>Last Visit:</strong> <span id="detailLastVisit"></span></p>
+          <p><strong>Status:</strong> <span id="detailStatus"></span></p>
+        </div>
+      </div>
+      
+      <div class="sep"></div>
+      
+      <div class="grid-2">
+        <div>
+          <h4>Current Prescription</h4>
+          <div id="detailPrescription"></div>
+        </div>
+        <div>
+          <h4>Medical History</h4>
+          <ul id="detailHistory"></ul>
+        </div>
+      </div>
+      
+      <div class="sep"></div>
+      
+      <!-- AI Insights Section -->
+      <div class="ai-insights">
+        <div class="ai-header">
+          <span>🤖</span> AI-Powered Health Insights
+        </div>
+        <div id="aiInsightsText">Analyzing patient data for patterns and recommendations...</div>
+      </div>
+      
+      <!-- Blockchain Verification -->
+      <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+        <span class="blockchain-badge" id="blockchainStatus">
+          🔗 Record Verified on Blockchain
+        </span>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn line" onclick="downloadPatientRecord()">📋 Download Record</button>
+      <button class="btn" onclick="closeModal('patientDetailsModal')">Close</button>
+    </div>
+  </div>
+</div>
+ 
+   <!-- HELP & SUPPORT -->
+<section id="help" class="section hidden">
+  <h2 class="title">Help & Support</h2>
+
+  <!-- Contact Options -->
+  <div class="card" style="padding:16px; margin-bottom:16px;">
+    <div style="font-weight:800; font-size:1.1rem; margin-bottom:12px;">Contact Us</div>
+    <p style="margin-bottom:10px;">We’re here to help you with NabhaTeleMed.</p>
+    <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;">
+      <li>📧 Email: <span style="color:#0066cc;">support@nabhatelemed.com</span></li>
+      <li>📞 Helpline: <span style="color:#0066cc;">+91 98765 43210</span></li>
+      <li>💬 WhatsApp: <span style="color:#0066cc;">Chat with us</span></li>
+    </ul>
+  </div>
+
+  <!-- Feedback -->
+  <div class="card" style="padding:16px; margin-bottom:16px;">
+    <div style="font-weight:800; font-size:1.1rem; margin-bottom:12px;">Send Feedback</div>
+    <p style="margin-bottom:12px;">Your feedback helps us improve the telemedicine experience.</p>
+    <form style="display:flex; flex-direction:column; gap:12px;">
+      <label style="display:flex; flex-direction:column;">
+        <span style="font-size:0.9rem; font-weight:600; margin-bottom:4px;">Your Name</span>
+        <input type="text" placeholder="Enter your name" class="input" style="padding:8px; border:1px solid #ddd; border-radius:8px;">
+      </label>
+      <label style="display:flex; flex-direction:column;">
+        <span style="font-size:0.9rem; font-weight:600; margin-bottom:4px;">Feedback / Issue</span>
+        <textarea rows="3" placeholder="Write your feedback..." class="input" style="padding:8px; border:1px solid #ddd; border-radius:8px;"></textarea>
+      </label>
+      <button type="submit" style="padding:10px 16px; background:#0066cc; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Submit</button>
+    </form>
+  </div>
+
+  <!-- FAQs -->
+  <div class="card" style="padding:16px; margin-bottom:16px;">
+    <div style="font-weight:800; font-size:1.1rem; margin-bottom:12px;">Frequently Asked Questions</div>
+    <ul style="list-style:disc; margin-left:18px; display:flex; flex-direction:column; gap:8px;">
+      <li><a href="#" style="color:#0066cc; text-decoration:none;">How to book an appointment?</a></li>
+      <li><a href="#" style="color:#0066cc; text-decoration:none;">How to check my prescriptions?</a></li>
+      <li><a href="#" style="color:#0066cc; text-decoration:none;">Payment & Billing Support</a></li>
+      <li><a href="#" style="color:#0066cc; text-decoration:none;">How to reset my account password?</a></li>
+    </ul>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="card" style="padding:16px;">
+    <div style="font-weight:800; font-size:1.1rem; margin-bottom:12px;">Quick Links</div>
+    <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;">
+      <li>🌐 Visit our website: <span style="color:#0066cc;">www.nabhatelemed.com</span></li>
+      <li>📱 Download app updates: <a href="#" style="color:#0066cc; text-decoration:none;">Check latest version</a></li>
+      <li>🚑 Emergency Helpline: <strong>108</strong></li>
+    </ul>
+  </div>
+</section>
+
+
+  <!-- PATIENT DRAWER -->
+<<<<<<< HEAD
+      <aside class="drawer" id="drawer" aria-labelledby="drawerTitle" aria-hidden="true">
+      <div class="drawer-head">
+        <div style="display:flex; align-items:center; gap:10px">
+          <div class="avatar" id="drawerAvatar">PN</div>
+          <div>
+            <div id="drawerTitle" style="font-weight:900">Patient</div>
+            <div class="sub" id="drawerSub">Patient ID</div>
+          </div>
+        </div>
+        <button class="btn line" onclick="closeDrawer()">Close</button>
+      </div>
+      <div class="drawer-body">
+        <div class="kpis">
+          <div class="kpi"><div class="sub">Pulse</div><div id="kpiPulse" style="font-weight:900; font-size:1.2rem">--</div></div>
+          <div class="kpi"><div class="sub">SpO₂</div><div id="kpiSpo2" style="font-weight:900; font-size:1.2rem">--</div></div>
+          <div class="kpi"><div class="sub">Temp</div><div id="kpiTemp" style="font-weight:900; font-size:1.2rem">--</div></div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:800; margin-bottom:6px">Chief Complaint</div>
+          <div id="ccText" class="sub">—</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div style="font-weight:800; margin-bottom:6px">Medical History</div>
+            <ul id="hxList" class="sub" style="margin:0 0 0 16px"></ul>
+          </div>
+          <div class="card">
+            <div style="font-weight:800; margin-bottom:6px">Current Medications</div>
+            <ul id="medList" class="sub" style="margin:0 0 0 16px"></ul>
+          </div>
+        </div>
+
+
+        <!-- Communication Interface -->
+        <div class="comms-container">
+          <div class="comms-tabs">
+            <div class="comms-tab active" data-tab="chat">💬 Chat</div>
+            <div class="comms-tab" data-tab="call">📞 Call</div>
+            <div class="comms-tab" data-tab="video">🎥 Video</div>
+          </div>
+          
+          <!-- Chat Interface -->
+          <div class="comms-content active" id="chat-content">
+            <div class="connection-status">
+              <span class="status-dot connected"></span>
+              <span>Secure connection established</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+              <!-- Messages will be added here dynamically -->
+            </div>
+            <div class="chat-input">
+              <input type="text" id="messageInput" placeholder="Type your message...">
+              <button class="btn" onclick="sendMessage()">➤</button>
+            </div>
+          </div>
+          
+          <!-- Voice Call Interface -->
+          <div class="comms-content" id="call-content">
+            <div class="call-status" id="callStatus">
+              Ready to make a voice call
+            </div>
+            <div class="call-controls">
+              <button class="call-btn mute" id="muteBtn" onclick="toggleMute()">🔇</button>
+              <button class="call-btn answer" id="startCallBtn" onclick="startVoiceCall()">📞</button>
+              <button class="call-btn end" id="endCallBtn" onclick="endCall()" style="display:none">📞</button>
+              <button class="call-btn video" onclick="switchToVideo()">🎥</button>
+            </div>
+          </div>
+          
+          <!-- Video Call Interface -->
+          <div class="comms-content" id="video-content">
+            <div class="video-container">
+              <video class="remote-video" id="remoteVideo" autoplay playsinline></video>
+              <video class="local-video" id="localVideo" autoplay playsinline muted></video>
+            </div>
+            <div class="call-status" id="videoStatus">
+              Ready to make a video call
+            </div>
+            <div class="call-controls">
+              <button class="call-btn mute" id="videoMuteBtn" onclick="toggleMute()">🔇</button>
+              <button class="call-btn answer" id="startVideoBtn" onclick="startVideoCall()">🎥</button>
+              <button class="call-btn end" id="endVideoBtn" onclick="endCall()" style="display:none">📞</button>
+              <button class="call-btn video" onclick="toggleVideo()">📹</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </aside>
+
+=======
+      
+<!-- PATIENT DRAWER -->
+<aside class="drawer" id="drawer" aria-labelledby="drawerTitle" aria-hidden="true">
+  <div class="drawer-head">
+    <div style="display:flex; align-items:center; gap:10px">
+      <div class="avatar" id="drawerAvatar">PN</div>
+      <div>
+        <div id="drawerTitle" style="font-weight:900">Patient</div>
+        <div class="sub" id="drawerSub">Patient ID</div>
+      </div>
+    </div>
+    <button class="btn line" onclick="closeDrawer()">Close</button>
+  </div>
+  <div class="drawer-body">
+    <!-- Patient Basic Info -->
+    <div class="grid-3">
+      <div class="kpi"><div class="sub">Patient ID</div><div id="kpiId" style="font-weight:900; font-size:1.1rem">--</div></div>
+      <div class="kpi"><div class="sub">Age</div><div id="kpiAge" style="font-weight:900; font-size:1.1rem">--</div></div>
+      <div class="kpi"><div class="sub">Gender</div><div id="kpiGender" style="font-weight:900; font-size:1.1rem">--</div></div>
+    </div>
+    
+    <!-- Consultation Timing -->
+    <div class="card" style="text-align:center; background:var(--brand-3);">
+      <div style="font-weight:800; margin-bottom:6px; color:var(--brand)">Consultation Timing</div>
+      <div id="consultTime" style="font-weight:900; font-size:1.2rem;">10:30 AM - 10:45 AM</div>
+      <div class="sub">Scheduled Duration: 15 minutes</div>
+    </div>
+
+    <!-- Chief Complaint -->
+    <div class="card">
+      <div style="font-weight:800; margin-bottom:6px; color:var(--brand)">Chief Complaint</div>
+      <div id="ccText" class="sub" style="padding:8px; background:#f9fbf9; border-radius:8px;">—</div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Key Information -->
+      <div class="card">
+        <div style="font-weight:800; margin-bottom:6px; color:var(--brand)">Key Information</div>
+        <div id="infoList">
+          <div><strong>Allergies:</strong> <span id="infoAllergies">None reported</span></div>
+          <div><strong>Chronic Conditions:</strong> <span id="infoConditions">None reported</span></div>
+          <div><strong>Last Consultation:</strong> <span id="infoLastConsult">—</span></div>
+        </div>
+      </div>
+      
+      <!-- Medical History -->
+      <div class="card">
+        <div style="font-weight:800; margin-bottom:6px; color:var(--brand)">Medical History</div>
+        <ul id="hxList" class="sub" style="margin:0 0 0 16px"></ul>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="actions">
+      <button class="btn" onclick="downloadPatientRecord()">📋 Download Full Record</button>
+      <button class="btn line" onclick="viewFullProfile()">👤 View Complete Profile</button>
+    </div>
+
+    <!-- Communication Interface -->
+    <div class="comms-container">
+      <div class="comms-tabs">
+        <div class="comms-tab active" data-tab="chat">💬 Chat</div>
+        <div class="comms-tab" data-tab="call">📞 Call</div>
+        <div class="comms-tab" data-tab="video">🎥 Video</div>
+      </div>
+      
+      <!-- Chat Interface -->
+      <div class="comms-content active" id="chat-content">
+        <div class="connection-status">
+          <span class="status-dot connected"></span>
+          <span>Secure connection established</span>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <!-- Messages will be added here dynamically -->
+        </div>
+        <div class="chat-input">
+          <input type="text" id="messageInput" placeholder="Type your message...">
+          <button class="btn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+      
+      <!-- Voice Call Interface -->
+      <div class="comms-content" id="call-content">
+        <div class="call-status" id="callStatus">
+          Ready to make a voice call
+        </div>
+        <div class="call-controls">
+          <button class="call-btn mute" id="muteBtn" onclick="toggleMute()">🔇</button>
+          <button class="call-btn answer" id="startCallBtn" onclick="startVoiceCall()">📞</button>
+          <button class="call-btn end" id="endCallBtn" onclick="endCall()" style="display:none">📞</button>
+          <button class="call-btn video" onclick="switchToVideo()">🎥</button>
+        </div>
+      </div>
+      
+      <!-- Video Call Interface -->
+      <div class="comms-content" id="video-content">
+        <div class="video-container">
+          <video class="remote-video" id="remoteVideo" autoplay playsinline></video>
+          <video class="local-video" id="localVideo" autoplay playsinline muted></video>
+        </div>
+        <div class="call-status" id="videoStatus">
+          Ready to make a video call
+        </div>
+        <div class="call-controls">
+          <button class="call-btn mute" id="videoMuteBtn" onclick="toggleMute()">🔇</button>
+          <button class="call-btn answer" id="startVideoBtn" onclick="startVideoCall()">🎥</button>
+          <button class="call-btn end" id="endVideoBtn" onclick="endCall()" style="display:none">📞</button>
+          <button class="call-btn video" onclick="toggleVideo()">📹</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+>>>>>>> c98e80f (Your commit message here)
+
+
+  <!-- MOBILE QUICK -->
+  <div class="mobile-footer">
+    <button class="btn" onclick="openTab('patients')">Patients</button>
+    <button class="btn" onclick="openTab('stock')">Stock</button>
+    <button class="btn" onclick="openTab('profile')">Profile</button>
+  </div>
+
+<<<<<<< HEAD
+<script src="doctor_home.js"></script>
+</body>
+</html>
+=======
+  <script src="/js/doctor.js">
+   
+  </script>
+</body>
+</html>
+>>>>>>> c98e80f (Your commit message here)

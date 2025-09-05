@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>NabhaCare — Pharmacist Dashboard</title>
+  <link rel="stylesheet" href="/css/Astyle.css">
+  <style>
+    
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <header class="nav" role="banner">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">💊</div>
+      <div>
+        <div style="font-weight:900">NabhaCare Pharmacy</div>
+        <small style="opacity:.9">Medicines & Supplies</small>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <span class="chip">Pharmacist: <strong id="phNameTop">Harpreet Singh</strong></span>
+      <span class="chip hide-md">Ph ID: <strong id="phIdTop">PH-7781</strong></span>
+
+      <div class="quick">
+        <button class="btn ghost" onclick="toast('Open notifications...')">🔔</button>
+        <button class="btn" onclick="toggleSide()">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="side" role="navigation" aria-label="Sidebar" id="side">
+    <h3 class="hide-md">Pharmacy</h3>
+    <nav class="navlist" id="sidebar">
+      <a class="navitem active" data-tab="profile">👤 <span class="hide-md">Profile</span></a>
+      <a class="navitem" data-tab="stock">📦 <span class="hide-md">Stock Management</span></a>
+      <a class="navitem" data-tab="purchase">🛒 <span class="hide-md">Purchase Requests</span></a>
+      <a class="navitem" data-tab="research">📚 <span class="hide-md">Research Library</span></a>
+      <a class="navitem" data-tab="prescriptions">🔍 <span class="hide-md">Prescription Lookup</span></a>
+      <div style="height:1px"></div>
+      <a class="navitem" data-tab="settings">⚙️ <span class="hide-md">Settings</span></a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" role="main">
+    <!-- PROFILE -->
+    <section id="profile" class="section">
+      <h2 class="title">Pharmacist Profile</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="avatar">HS</div>
+            <div>
+              <div style="font-weight:800;font-size:1.05rem" id="phName">Harpreet Singh</div>
+              <div class="muted">Head Pharmacist — Nabha</div>
+            </div>
+            <div class="right badge ok">ID: <span id="phId">PH-7781</span></div>
+          </div>
+          <div class="sep"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="card small" style="min-width:140px">
+              <div class="muted">In-stock SKUs</div>
+              <div style="font-weight:800;font-size:1.1rem">342</div>
+            </div>
+            <div class="card small" style="min-width:140px">
+              <div class="muted">Pending Orders</div>
+              <div style="font-weight:800;font-size:1.1rem">6</div>
+            </div>
+            <div class="card small" style="min-width:140px">
+              <div class="muted">Low-stock</div>
+              <div style="font-weight:800;font-size:1.1rem;color:var(--warn)">12</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div>
+              <div style="font-weight:800">Quick Actions</div>
+              <div class="muted">Fast pharmacy operations</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <button class="btn" onclick="openAddStock()">➕ Add Stock</button>
+            <button class="btn line" onclick="openPurchaseForm()">🛒 New Purchase Request</button>
+            <button class="btn line" onclick="toast('Syncing with suppliers…')">⟳ Sync Inventory</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STOCK MANAGEMENT -->
+    <section id="stock" class="section hidden">
+      <h2 class="title">Stock Management</h2>
+
+      <div class="card stock-toolbar" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <input id="stockSearch" class="input" placeholder="Search medicine or salt">
+        <button class="pill active" data-stock="all" onclick="filterStock(this)">All</button>
+        <button class="pill" data-stock="low" onclick="filterStock(this)">Low</button>
+        <button class="pill" data-stock="out" onclick="filterStock(this)">Out</button>
+        <div class="right" style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn" onclick="toast('Exporting stock CSV…')">⬇️ Export</button>
+          <button class="btn line" onclick="openAddStock()">➕ Add / Update</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <table>
+          <thead>
+            <tr><th>Medicine</th><th>Salt</th><th>Qty</th><th>Expiry</th><th>Status</th></tr>
+          </thead>
+          <tbody id="stockBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PURCHASE REQUESTS -->
+    <section id="purchase" class="section hidden">
+      <h2 class="title">Purchase Requests</h2>
+      
+      <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+        <input id="purchaseSearch" class="input" placeholder="Search requests...">
+        <button class="btn line" onclick="openPurchaseForm()">➕ New Request</button>
+      </div>
+
+      <div id="purchaseList" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
+        <!-- dynamic requests -->
+      </div>
+    </section>
+
+    <!-- RESEARCH LIBRARY -->
+    <section id="research" class="section hidden">
+      <h2 class="title">Research Library</h2>
+
+      <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+        <input id="researchSearch" class="input" placeholder="Search research & docs">
+        <button class="btn line" onclick="toast('Fetching latest papers…')">🔎 Search</button>
+        <button class="btn line" onclick="toast('Opening research upload…')">📤 Upload</button>
+      </div>
+
+      <div id="researchList" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
+        <!-- research cards -->
+      </div>
+    </section>
+
+    <!-- PRESCRIPTIONS LOOKUP -->
+    <section id="prescriptions" class="section hidden">
+      <h2 class="title">Prescription Lookup</h2>
+
+      <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+        <input id="prescSearch" class="input" placeholder="Enter Patient ID or Prescription ID (e.g. PA-001, RX-2025-01)">
+        <button class="btn" onclick="searchPrescription()">Search</button>
+        <button class="btn line" onclick="demoAIPresc()">Demo AI Presc</button>
+      </div>
+
+      <div id="prescResult" style="margin-top:12px"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="settings" class="section hidden">
+      <h2 class="title">Settings</h2>
+      
+      <div class="grid grid-2">
+        <div class="card">
+          <div style="font-weight:800;margin-bottom:12px">Account Preferences</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" id="autoSync"> Auto-sync with suppliers
+            </label>
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" id="lowStockAlerts"> Low stock alerts
+            </label>
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" id="expiryAlerts"> Expiry alerts
+            </label>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div style="font-weight:800;margin-bottom:12px">Notification Settings</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" checked> Email notifications
+            </label>
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" checked> Push notifications
+            </label>
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox"> SMS alerts
+            </label>
+          </div>
+        </div>
+        
+        <div class="card" style="grid-column: span 2">
+          <div style="font-weight:800;margin-bottom:12px">Pharmacy Information</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <label style="display:block;margin-bottom:4px;font-weight:600">Pharmacy Name</label>
+              <input type="text" class="input" value="NabhaCare Pharmacy">
+            </div>
+            <div>
+              <label style="display:block;margin-bottom:4px;font-weight:600">License Number</label>
+              <input type="text" class="input" value="PUN-PH-2023-7781">
+            </div>
+            <div>
+              <label style="display:block;margin-bottom:4px;font-weight:600">Contact Email</label>
+              <input type="email" class="input" value="pharmacy@nabhacare.in">
+            </div>
+            <div>
+              <label style="display:block;margin-bottom:4px;font-weight:600">Phone Number</label>
+              <input type="tel" class="input" value="+91 98765 43210">
+            </div>
+            <div style="grid-column: span 2">
+              <label style="display:block;margin-bottom:4px;font-weight:600">Address</label>
+              <textarea class="textarea" rows="2">Nabha Main Road, Nabha, Punjab - 147201</textarea>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:12px">
+            <button class="btn" onclick="toast('Settings saved successfully')">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- DRAWER: Add/Update Stock -->
+  <aside class="drawer" id="stockDrawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="font-weight:900">Add / Update Stock</div>
+      </div>
+      <div>
+        <button class="btn line" onclick="closeStockDrawer()">Close</button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div class="card small">
+        <label>Medicine Name</label>
+        <input id="addName" class="input" placeholder="e.g. Paracetamol 500mg">
+        <label style="margin-top:8px">Salt / Composition</label>
+        <input id="addSalt" class="input" placeholder="e.g. Acetaminophen">
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="addQty" type="number" class="input" placeholder="Quantity">
+          <input id="addExpiry" type="month" class="input" placeholder="Expiry">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <select id="addStatus" class="select">
+            <option value="ok">Available</option>
+            <option value="low">Low</option>
+            <option value="out">Out</option>
+          </select>
+          <button class="btn" onclick="submitAddStock()">Save</button>
+        </div>
+      </div>
+
+      <div class="card small">
+        <div style="font-weight:800">Recent Adds</div>
+        <div id="recentAdds" class="muted" style="margin-top:8px">—</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MODAL: Purchase Request Form -->
+  <div class="modal-back" id="purchaseModal">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-weight:900">New Purchase Request</div>
+        <button class="btn line" onclick="closePurchaseModal()">Close</button>
+      </div>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="display:block;margin-bottom:4px;font-weight:600">Medicine Name</label>
+          <input id="purchaseName" class="input" placeholder="e.g. Amoxicillin 500mg">
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:4px;font-weight:600">Quantity</label>
+          <input id="purchaseQty" type="number" class="input" placeholder="e.g. 50">
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:4px;font-weight:600">Priority</label>
+          <select id="purchasePriority" class="select">
+            <option value="normal">Normal</option>
+            <option value="high">High Priority</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:4px;font-weight:600">Requested By</label>
+          <input id="purchaseRequester" class="input" placeholder="Your name or department">
+        </div>
+        <div style="grid-column: span 2">
+          <label style="display:block;margin-bottom:4px;font-weight:600">Notes</label>
+          <textarea id="purchaseNotes" class="textarea" rows="3" placeholder="Additional information..."></textarea>
+        </div>
+      </div>
+      
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+        <button class="btn line" onclick="closePurchaseModal()">Cancel</button>
+        <button class="btn" onclick="submitPurchaseRequest()">Submit Request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Research Preview -->
+  <div class="modal-back" id="researchModal">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-weight:900" id="researchTitle">Research Title</div>
+        <button class="btn line" onclick="closeResearchModal()">Close</button>
+      </div>
+      <div id="researchBody" style="max-height:60vh;overflow:auto" class="muted">Abstract / preview...</div>
+    </div>
+  </div>
+
+  <!-- MODAL: Prescription AI / Fulfill -->
+  <div class="modal-back" id="prescModal">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-weight:900" id="prescTitle">Prescription</div>
+        <button class="btn line" onclick="closePrescModal()">Close</button>
+      </div>
+
+      <div id="prescBody">
+        <!-- AI output will go here -->
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button class="btn" onclick="fulfillPrescription()">✔️ Fulfill & Dispense</button>
+        <button class="btn line" onclick="toast('Sent to ordering system')">Push to Purchase</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- mobile quick -->
+  <div class="mobile-footer" id="mobileFooter">
+    <button class="btn" onclick="openTab('prescriptions')">Prescriptions</button>
+    <button class="btn" onclick="openTab('stock')">Stock</button>
+    <button class="btn" onclick="openTab('purchase')">Requests</button>
+  </div>
+
+  <script>
+    /* Demo data */
+    const stockData = [
+      {name:"Paracetamol 500mg", salt:"Acetaminophen", qty:120, expiry:"2026-05", status:"ok"},
+      {name:"Amoxicillin 500mg", salt:"Amoxicillin", qty:35, expiry:"2025-02", status:"low"},
+      {name:"Ibuprofen 200mg", salt:"Ibuprofen", qty:0, expiry:"2025-10", status:"out"},
+      {name:"Cetirizine 10mg", salt:"Cetirizine", qty:86, expiry:"2026-01", status:"ok"},
+      {name:"Omeprazole 20mg", salt:"Omeprazole", qty:15, expiry:"2025-03", status:"low"},
+      {name:"Atorvastatin 10mg", salt:"Atorvastatin", qty:42, expiry:"2025-08", status:"ok"},
+      {name:"Metformin 500mg", salt:"Metformin", qty:28, expiry:"2025-05", status:"low"},
+      {name:"Losartan 50mg", salt:"Losartan", qty:64, expiry:"2026-03", status:"ok"},
+    ];
+
+    const purchaseRequests = [
+      {id:"PR-001", requester:"Clinic - Dr. Aman", items:[{name:"Amoxicillin 500mg", qty:20}], note:"Urgent", status:"pending", date:"2023-05-15"},
+      {id:"PR-002", requester:"Patient - Kiran Bala", items:[{name:"Ibuprofen 200mg", qty:10}], note:"Home delivery", status:"pending", date:"2023-05-14"},
+      {id:"PR-003", requester:"Ward 4 - Nurse Station", items:[{name:"Paracetamol 500mg", qty:50}, {name:"Cetirizine 10mg", qty:30}], note:"Monthly restock", status:"approved", date:"2023-05-10"},
+    ];
+
+    const researchDocs = [
+      {id:"R-001", title:"Comparative efficacy of Paracetamol", body:"Abstract: This study compares the efficacy of paracetamol across different patient demographics. Results show consistent pain relief in 89% of cases with minimal side effects."},
+      {id:"R-002", title:"Amoxicillin – dosage guidelines", body:"Abstract: Updated guidelines for antibiotic stewardship recommend reduced duration of amoxicillin courses for uncomplicated infections to combat antimicrobial resistance."},
+      {id:"R-003", title:"Drug interactions with Omeprazole", body:"Abstract: Review of PPI interactions with common cardiovascular and psychiatric medications. Notable interactions found with clopidogrel and diazepam requiring dosage adjustments."},
+      {id:"R-004", title:"Storage stability of insulin analogs", body:"Abstract: Study on the stability of various insulin formulations under different storage conditions. Recommendations provided for optimal pharmacy storage practices."},
+    ];
+
+    /* Sidebar tabs */
+    const navitems = document.querySelectorAll('.navitem');
+    const sections = document.querySelectorAll('.section');
+    navitems.forEach(n => n.addEventListener('click', (e)=>{
+      e.preventDefault();
+      navitems.forEach(x=>x.classList.remove('active'));
+      n.classList.add('active');
+      openTab(n.dataset.tab);
+      if(window.innerWidth <= 820) closeSide();
+    }));
+
+    function openTab(id){
+      sections.forEach(s=>s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      if(id === 'stock') renderStock();
+      if(id === 'purchase') renderPurchase();
+      if(id === 'research') renderResearch();
+      if(id === 'prescriptions') { document.getElementById('prescResult').innerHTML=''; }
+    }
+
+    // initial
+    document.addEventListener('DOMContentLoaded', ()=>{ 
+      openTab('profile'); 
+      renderStock(); 
+      renderPurchase(); 
+      renderResearch(); 
+    });
+
+    /* Side toggle for mobile */
+    function toggleSide(){
+      const side = document.getElementById('side');
+      side.classList.toggle('open');
+    }
+    function closeSide(){ document.getElementById('side').classList.remove('open') }
+
+    /* STOCK */
+    const stockBody = document.getElementById('stockBody');
+    function renderStock(){
+      const q = (document.getElementById('stockSearch') || {}).value || '';
+      const view = document.querySelector('.pill.active')?.dataset?.stock || 'all';
+      const list = stockData.filter(m=>{
+        const okQ = !q || m.name.toLowerCase().includes(q.toLowerCase()) || m.salt.toLowerCase().includes(q.toLowerCase());
+        const okV = view==='all' || m.status===view;
+        return okQ && okV;
+      });
+      stockBody.innerHTML = list.map(m=>{
+        const st = m.status==='ok' ? '<span class="badge ok">Available</span>' :
+                 m.status==='low' ? '<span class="badge warn">Low</span>' :
+                 '<span class="badge danger">Out</span>';
+        const qtyCls = m.status==='ok' ? 'qty' : m.status==='low' ? 'low' : 'out';
+        return `<tr>
+          <td>${m.name}</td>
+          <td class="muted">${m.salt}</td>
+          <td class="${qtyCls}">${m.qty}</td>
+          <td>${m.expiry}</td>
+          <td>${st}</td>
+        </tr>`;
+      }).join('') || `<tr><td colspan="5" class="muted" style="text-align:center">No items found.</td></tr>`;
+    }
+
+    document.getElementById('stockSearch')?.addEventListener('input', renderStock);
+    function filterStock(btn){
+      document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      renderStock();
+    }
+
+    /* Add stock drawer */
+    const stockDrawer = document.getElementById('stockDrawer');
+    function openAddStock(){
+      stockDrawer.classList.add('open');
+      stockDrawer.setAttribute('aria-hidden','false');
+    }
+    function closeStockDrawer(){
+      stockDrawer.classList.remove('open');
+      stockDrawer.setAttribute('aria-hidden','true');
+    }
+    function submitAddStock(){
+      const name = document.getElementById('addName').value.trim();
+      const salt = document.getElementById('addSalt').value.trim();
+      const qty = Number(document.getElementById('addQty').value || 0);
+      const expiry = document.getElementById('addExpiry').value || '';
+      const status = document.getElementById('addStatus').value || 'ok';
+      if(!name || !salt || qty<=0){ toast('Please fill name, salt and qty'); return; }
+      
+      // Check if medicine already exists
+      const existingIndex = stockData.findIndex(item => 
+        item.name.toLowerCase() === name.toLowerCase() && 
+        item.salt.toLowerCase() === salt.toLowerCase()
+      );
+      
+      if(existingIndex !== -1) {
+        // Update existing item
+        stockData[existingIndex].qty += qty;
+        if(expiry) stockData[existingIndex].expiry = expiry;
+        stockData[existingIndex].status = status;
+        document.getElementById('recentAdds').textContent = `${name} updated (+${qty})`;
+      } else {
+        // Add new item
+        stockData.unshift({name,salt,qty,expiry,status});
+        document.getElementById('recentAdds').textContent = `${name} x${qty} added`;
+      }
+      
+      closeStockDrawer();
+      renderStock();
+      toast('Stock updated successfully');
+    }
+
+    /* PURCHASE requests */
+    function renderPurchase(){
+      const el = document.getElementById('purchaseList');
+      const searchTerm = (document.getElementById('purchaseSearch') || {}).value || '';
+      
+      const filteredRequests = purchaseRequests.filter(r => 
+        !searchTerm || 
+        r.requester.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        r.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.items.some(i => i.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+      
+      el.innerHTML = filteredRequests.map(r => {
+        const items = r.items.map(i => `${i.name} ×${i.qty}`).join(', ');
+        const statusClass = r.status === 'approved' ? 'ok' : r.status === 'rejected' ? 'danger' : 'warn';
+        const statusText = r.status === 'approved' ? 'Approved' : r.status === 'rejected' ? 'Rejected' : 'Pending';
+        
+        return `<div class="card request fade-in">
+          <div style="display:flex;gap:12px;align-items:center;margin-bottom:8px">
+            <div style="font-weight:800">${r.requester}</div>
+            <div class="muted">${r.id}</div>
+            <div class="badge ${statusClass}">${statusText}</div>
+          </div>
+          <div class="muted" style="margin-bottom:8px">${items}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="muted">${r.note} • ${r.date}</div>
+            <div class="actions">
+              ${r.status === 'pending' ? `
+                <button class="btn" onclick="approveRequest('${r.id}')">Approve</button>
+                <button class="btn line" onclick="rejectRequest('${r.id}')">Reject</button>
+              ` : ''}
+            </div>
+          </div>
+        </div>`;
+      }).join('') || '<div class="card muted">No requests found</div>';
+    }
+    
+    document.getElementById('purchaseSearch')?.addEventListener('input', renderPurchase);
+    
+    function approveRequest(id){
+      const idx = purchaseRequests.findIndex(r=>r.id===id);
+      if(idx===-1) return;
+      purchaseRequests[idx].status='approved';
+      toast('Request approved — pushed to supplier');
+      renderPurchase();
+    }
+    
+    function rejectRequest(id){
+      const idx = purchaseRequests.findIndex(r=>r.id===id);
+      if(idx===-1) return;
+      purchaseRequests[idx].status='rejected';
+      toast('Request rejected');
+      renderPurchase();
+    }
+    
+    function openPurchaseForm(){ 
+      document.getElementById('purchaseModal').classList.add('show');
+    }
+    
+    function closePurchaseModal() {
+      document.getElementById('purchaseModal').classList.remove('show');
+    }
+    
+    function submitPurchaseRequest() {
+      const name = document.getElementById('purchaseName').value.trim();
+      const qty = document.getElementById('purchaseQty').value;
+      const requester = document.getElementById('purchaseRequester').value.trim();
+      const notes = document.getElementById('purchaseNotes').value.trim();
+      
+      if(!name || !qty || !requester) {
+        toast('Please fill required fields');
+        return;
+      }
+      
+      const newRequest = {
+        id: `PR-${String(purchaseRequests.length + 1).padStart(3, '0')}`,
+        requester: requester,
+        items: [{name: name, qty: parseInt(qty)}],
+        note: notes || 'No additional notes',
+        status: 'pending',
+        date: new Date().toISOString().split('T')[0]
+      };
+      
+      purchaseRequests.unshift(newRequest);
+      closePurchaseModal();
+      renderPurchase();
+      toast('Purchase request submitted');
+    }
+
+    /* RESEARCH */
+    function renderResearch(){
+      const list = researchDocs;
+      const searchTerm = (document.getElementById('researchSearch') || {}).value || '';
+      
+      const filteredDocs = researchDocs.filter(d => 
+        !searchTerm || 
+        d.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        d.body.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      
+      const el = document.getElementById('researchList');
+      el.innerHTML = filteredDocs.map(d => `
+        <div class="card fade-in">
+          <div style="font-weight:800;margin-bottom:8px">${d.title}</div>
+          <div class="muted" style="margin-bottom:12px;font-size:0.9rem">${d.body.substring(0, 100)}...</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="muted">Document ID: ${d.id}</div>
+            <button class="btn line" onclick="previewResearch('${d.id}')">Read More</button>
+          </div>
+        </div>`).join('') || '<div class="card muted">No research documents found</div>';
+    }
+    
+    document.getElementById('researchSearch')?.addEventListener('input', renderResearch);
+    
+    function previewResearch(id){
+      const doc = researchDocs.find(d=>d.id===id);
+      if(!doc) return;
+      document.getElementById('researchTitle').textContent = doc.title;
+      document.getElementById('researchBody').textContent = doc.body;
+      document.getElementById('researchModal').classList.add('show');
+    }
+    
+    function closeResearchModal(){ 
+      document.getElementById('researchModal').classList.remove('show'); 
+    }
+
+    /* PRESCRIPTION lookup + AI example */
+    function searchPrescription(){
+      const q = document.getElementById('prescSearch').value.trim();
+      if(!q){ toast('Enter an ID to search'); return; }
+      // demo: if q matches PA-001 show patient
+      if(q.toLowerCase().includes('pa-001') || q.toLowerCase().includes('rx-demo')){
+        renderPrescModal({
+          pid:'PA-001',
+          patient:'Gurpreet Kaur',
+          age:32,
+          meds:[
+            {name:'Paracetamol 500mg', dose:'1 tab', freq:'8 hourly', days:3},
+            {name:'Cetirizine 10mg', dose:'1 tab', freq:'once daily', days:5}
+          ],
+          notes:'Take with food. Return if fever persists.'
+        });
+      } else {
+        document.getElementById('prescResult').innerHTML = `
+          <div class="card muted" style="text-align:center">
+            No prescription found for "${q}". Try searching for "PA-001" or "RX-DEMO" for a demo.
+          </div>
+        `;
+      }
+    }
+
+    function demoAIPresc(){
+      // Demo of AI-generated prescription card
+      renderPrescModal({
+        pid:'AI-RX-2025-07',
+        patient:'Sample Patient',
+        age:45,
+        meds:[
+          {name:'Amoxicillin 500mg', dose:'1 cap', freq:'8 hourly', days:5},
+          {name:'Paracetamol 500mg', dose:'1 tab', freq:'6 hourly', days:3}
+        ],
+        notes:'AI-suggested: check allergy history before dispensing.'
+      });
+    }
+
+    function renderPrescModal(p){
+      document.getElementById('prescTitle').textContent = `Prescription • ${p.pid}`;
+      const body = document.getElementById('prescBody');
+      body.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div><strong>${p.patient}</strong> • ${p.age} yrs</div>
+          <div class="muted">ID: ${p.pid}</div>
+        </div>
+        <div style="border-radius:10px;padding:12px;background:#fbfff9">
+          ${p.meds.map(m=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #eef6ef">
+            <div><strong>${m.name}</strong><div class="muted">${m.dose} • ${m.freq}</div></div>
+            <div class="muted">${m.days} days</div>
+          </div>`).join('')}
+        </div>
+        <div style="margin-top:12px" class="muted"><strong>Notes:</strong> ${p.notes}</div>
+        <div style="margin-top:8px">
+          <label style="display:block;margin-bottom:6px">Adjust quantities / mark as ready</label>
+          <textarea id="fulfillNotes" class="textarea" rows="3" placeholder="Add packing notes or instructions"></textarea>
+        </div>
+      `;
+      document.getElementById('prescModal').classList.add('show');
+    }
+
+    function closePrescModal(){ document.getElementById('prescModal').classList.remove('show') }
+
+    function fulfillPrescription(){
+      const notes = document.getElementById('fulfillNotes')?.value || '';
+      toast('Prescription fulfilled. ' + (notes ? 'Notes saved.' : ''));
+      closePrescModal();
+    }
+
+    /* Toast helper */
+    function toast(msg){
+      const t = document.createElement('div');
+      t.textContent = msg;
+      Object.assign(t.style,{
+        position:'fixed',
+        left:'50%',
+        transform:'translateX(-50%)',
+        bottom:'24px',
+        background:'#223729',
+        color:'#fff',
+        padding:'10px 14px',
+        borderRadius:'10px',
+        zIndex:9999,
+        opacity:0,
+        transition:'opacity .18s',
+        fontSize: '14px',
+        fontWeight: '500'
+      });
+      document.body.appendChild(t);
+      requestAnimationFrame(()=>t.style.opacity='1');
+      setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),220) },1700);
+    }
+
+    /* Utility: open specific tab (mobile quick) */
+    function openTab(id){
+      document.querySelectorAll('.navitem').forEach(n=>n.classList.remove('active'));
+      document.querySelector(`.navitem[data-tab="${id}"]`)?.classList.add('active');
+      openTabOnly(id);
+    }
+    
+    function openTabOnly(id){
+      sections.forEach(s=>s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      if(id === 'stock') renderStock();
+      if(id === 'purchase') renderPurchase();
+      if(id === 'research') renderResearch();
+    }
+
+    // init render
+    renderStock();
+    renderPurchase();
+    renderResearch();
+
+  </script>
+</body>
+</html>
