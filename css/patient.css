@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-
-  :root{
-=======
 :root{
->>>>>>> c98e80f (Your commit message here)
     --brand:#2c6d52;         /* deep teal */
     --accent:#53b89a;        /* light teal */
     --bg:#f4f7f6;
@@ -265,8 +260,6 @@
     background: #f1fbf7;
   }
   
-<<<<<<< HEAD
-=======
   /* Connect doctor modal */
   .connect-modal {
     position: fixed;
@@ -354,7 +347,6 @@
     resize: vertical;
   }
   
->>>>>>> c98e80f (Your commit message here)
   /* responsive */
   @media (max-width:720px){
     .app{grid-template-columns:1fr;grid-template-rows:64px auto 1fr;grid-template-areas:"nav" "side" "main"}
@@ -373,8 +365,6 @@
       flex-direction: column;
       text-align: center;
     }
-<<<<<<< HEAD
-=======
     
     .connect-content {
       width: 95%;
@@ -432,5 +422,4 @@
   .small-btn {
     padding: 4px 8px;
     font-size: 0.8rem;
->>>>>>> c98e80f (Your commit message here)
   }

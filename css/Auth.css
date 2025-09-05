@@ -23,7 +23,7 @@
   /* Left Side */
   .auth-left {
     flex: 1;
-    background: url('WhatsApp Image 2025-08-31 at 19.38.57_d19eabc8.jpg') center/cover no-repeat;
+    background: url('../WhatsApp Image 2025-08-31 at 19.38.57_d19eabc8.jpg') center/cover no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;

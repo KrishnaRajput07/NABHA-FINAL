@@ -4,14 +4,10 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>NabhaCare — Pharmacist Dashboard</title>
-<<<<<<< HEAD
-  <link rel="stylesheet" href="Pharmacist.css">
-=======
   <link rel="stylesheet" href="/css/pharmacist.css">
   <style>
     
   </style>
->>>>>>> c98e80f (Your commit message here)
 </head>
 <body>
   <!-- NAV -->
@@ -41,10 +37,7 @@
     <nav class="navlist" id="sidebar">
       <a class="navitem active" data-tab="profile">👤 <span class="hide-md">Profile</span></a>
       <a class="navitem" data-tab="stock">📦 <span class="hide-md">Stock Management</span></a>
-<<<<<<< HEAD
-=======
       <a class="navitem" data-tab="expiry">⚠️ <span class="hide-md">Expiry Alerts</span></a>
->>>>>>> c98e80f (Your commit message here)
       <a class="navitem" data-tab="purchase">🛒 <span class="hide-md">Purchase Requests</span></a>
       <a class="navitem" data-tab="research">📚 <span class="hide-md">Research Library</span></a>
       <a class="navitem" data-tab="prescriptions">🔍 <span class="hide-md">Prescription Lookup</span></a>
@@ -82,13 +75,10 @@
               <div class="muted">Low-stock</div>
               <div style="font-weight:800;font-size:1.1rem;color:var(--warn)">12</div>
             </div>
-<<<<<<< HEAD
-=======
             <div class="card small" style="min-width:140px">
               <div class="muted">Expiring Soon</div>
               <div style="font-weight:800;font-size:1.1rem;color:var(--danger)" id="expiringCount">5</div>
             </div>
->>>>>>> c98e80f (Your commit message here)
           </div>
         </div>
 
@@ -101,11 +91,7 @@
           </div>
 
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-<<<<<<< HEAD
-            <button class="btn" onclick="openAddStock()">➕ Add Stock</button>
-=======
             <button class="btn" onclick="openAddBatch()">➕ Add Batch</button>
->>>>>>> c98e80f (Your commit message here)
             <button class="btn line" onclick="openPurchaseForm()">🛒 New Purchase Request</button>
             <button class="btn line" onclick="toast('Syncing with suppliers…')">⟳ Sync Inventory</button>
           </div>
@@ -118,15 +104,6 @@
       <h2 class="title">Stock Management</h2>
 
       <div class="card stock-toolbar" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-<<<<<<< HEAD
-        <input id="stockSearch" class="input" placeholder="Search medicine or salt">
-        <button class="pill active" data-stock="all" onclick="filterStock(this)">All</button>
-        <button class="pill" data-stock="low" onclick="filterStock(this)">Low</button>
-        <button class="pill" data-stock="out" onclick="filterStock(this)">Out</button>
-        <div class="right" style="margin-left:auto;display:flex;gap:8px">
-          <button class="btn" onclick="toast('Exporting stock CSV…')">⬇️ Export</button>
-          <button class="btn line" onclick="openAddStock()">➕ Add / Update</button>
-=======
         <input id="stockSearch" class="input" placeholder="Search medicine, salt, or batch">
         <button class="pill active" data-stock="all" onclick="filterStock(this)">All</button>
         <button class="pill" data-stock="low" onclick="filterStock(this)">Low</button>
@@ -135,16 +112,12 @@
         <div class="right" style="margin-left:auto;display:flex;gap:8px">
           <button class="btn" onclick="exportStock()">⬇️ Export</button>
           <button class="btn line" onclick="openAddBatch()">➕ Add Batch</button>
->>>>>>> c98e80f (Your commit message here)
         </div>
       </div>
 
       <div class="card" style="padding:0;overflow:hidden">
         <table>
           <thead>
-<<<<<<< HEAD
-            <tr><th>Medicine</th><th>Salt</th><th>Qty</th><th>Expiry</th><th>Status</th></tr>
-=======
             <tr>
               <th>Medicine</th>
               <th>Salt</th>
@@ -154,18 +127,12 @@
               <th>Status</th>
               <th>Actions</th>
             </tr>
->>>>>>> c98e80f (Your commit message here)
           </thead>
           <tbody id="stockBody"></tbody>
         </table>
       </div>
     </section>
 
-<<<<<<< HEAD
-    <!-- PURCHASE REQUESTS -->
-    <section id="purchase" class="section hidden">
-      <h2 class="title">Purchase Requests</h2>
-=======
     <!-- EXPIRY ALERTS SECTION -->
     <section id="expiry" class="section hidden">
       <h2 class="title">Expiry Alerts</h2>
@@ -184,7 +151,6 @@
         <input id="purchaseSearch" class="input" placeholder="Search requests...">
         <button class="btn line" onclick="openPurchaseForm()">➕ New Request</button>
       </div>
->>>>>>> c98e80f (Your commit message here)
 
       <div id="purchaseList" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
         <!-- dynamic requests -->
@@ -195,16 +161,10 @@
     <section id="research" class="section hidden">
       <h2 class="title">Research Library</h2>
 
-<<<<<<< HEAD
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-        <input id="researchSearch" class="input" placeholder="Search research & docs">
-        <button class="btn line" onclick="toast('Fetching latest papers…')">🔎 Search</button>
-=======
       <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
         <input id="researchSearch" class="input" placeholder="Search research & docs">
         <button class="btn line" onclick="toast('Fetching latest papers…')">🔎 Search</button>
         <button class="btn line" onclick="toast('Opening research upload…')">📤 Upload</button>
->>>>>>> c98e80f (Your commit message here)
       </div>
 
       <div id="researchList" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
@@ -216,11 +176,7 @@
     <section id="prescriptions" class="section hidden">
       <h2 class="title">Prescription Lookup</h2>
 
-<<<<<<< HEAD
-      <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-=======
       <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
->>>>>>> c98e80f (Your commit message here)
         <input id="prescSearch" class="input" placeholder="Enter Patient ID or Prescription ID (e.g. PA-001, RX-2025-01)">
         <button class="btn" onclick="searchPrescription()">Search</button>
         <button class="btn line" onclick="demoAIPresc()">Demo AI Presc</button>
@@ -232,11 +188,6 @@
     <!-- SETTINGS -->
     <section id="settings" class="section hidden">
       <h2 class="title">Settings</h2>
-<<<<<<< HEAD
-      <div class="card">
-        <div style="font-weight:800;margin-bottom:8px">Preferences</div>
-        <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" class="input" id="autoSync"> Auto-sync with suppliers</label>
-=======
       
       <div class="grid grid-2">
         <div class="card">
@@ -297,42 +248,10 @@
             <button class="btn" onclick="toast('Settings saved successfully')">Save Changes</button>
           </div>
         </div>
->>>>>>> c98e80f (Your commit message here)
       </div>
     </section>
   </main>
 
-<<<<<<< HEAD
-  <!-- DRAWER: Add/Update Stock -->
-  <aside class="drawer" id="stockDrawer" aria-hidden="true">
-    <div class="drawer-head">
-      <div style="display:flex;gap:12px;align-items:center">
-        <div style="font-weight:900">Add / Update Stock</div>
-      </div>
-      <div>
-        <button class="btn line" onclick="closeStockDrawer()">Close</button>
-      </div>
-    </div>
-    <div class="drawer-body">
-      <div class="card small">
-        <label>Medicine Name</label>
-        <input id="addName" class="input" placeholder="e.g. Paracetamol 500mg">
-        <label style="margin-top:8px">Salt / Composition</label>
-        <input id="addSalt" class="input" placeholder="e.g. Acetaminophen">
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <input id="addQty" type="number" class="input" placeholder="Quantity">
-          <input id="addExpiry" type="month" class="input" placeholder="Expiry">
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <select id="addStatus" class="select">
-            <option value="ok">Available</option>
-            <option value="low">Low</option>
-            <option value="out">Out</option>
-          </select>
-          <button class="btn" onclick="submitAddStock()">Save</button>
-        </div>
-      </div>
-=======
   <!-- DRAWER: Add/Update Batch -->
   <aside class="drawer" id="batchDrawer" aria-hidden="true">
     <div class="drawer-head">
@@ -370,7 +289,6 @@
           </div>
         </div>
       </form>
->>>>>>> c98e80f (Your commit message here)
 
       <div class="card small">
         <div style="font-weight:800">Recent Adds</div>
@@ -379,8 +297,6 @@
     </div>
   </aside>
 
-<<<<<<< HEAD
-=======
   <!-- MODAL: Purchase Request Form -->
   <div class="modal-back" id="purchaseModal">
     <div class="modal">
@@ -423,7 +339,6 @@
     </div>
   </div>
 
->>>>>>> c98e80f (Your commit message here)
   <!-- MODAL: Research Preview -->
   <div class="modal-back" id="researchModal">
     <div class="modal">
@@ -461,15 +376,9 @@
     <button class="btn" onclick="openTab('purchase')">Requests</button>
   </div>
 
-<<<<<<< HEAD
-  <script src="Pharmacist.js"></script>
-</body>
-</html>
-=======
   <script src="/js/pharmacist.js">
    
 
   </script>
 </body>
 </html>
->>>>>>> c98e80f (Your commit message here)
