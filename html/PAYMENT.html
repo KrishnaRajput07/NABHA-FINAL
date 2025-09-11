@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Portal - Alerts & Follow-up</title>
+  <style>
+    :root {
+      --brand: #1890ff;
+      --success: #52c41a;
+      --warning: #fa8c16;
+      --danger: #ff4d4f;
+      --text: #333;
+      --muted: #666;
+      --light: #f5f5f5;
+      --border: #e8e8e8;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      background-color: #f0f2f5;
+      color: var(--text);
+      padding: 20px;
+    }
+    
+    .section {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .title {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+    
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .col {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    
+    .small {
+      font-size: 0.85rem;
+    }
+    
+    .muted {
+      color: var(--muted);
+    }
+    
+    .pill {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    
+    .pill.active {
+      background: var(--brand);
+      color: white;
+      border-color: var(--brand);
+    }
+    
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      background: var(--brand);
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    
+    .btn.ghost {
+      background: transparent;
+      color: var(--brand);
+      border: 1px solid var(--brand);
+    }
+    
+    .btn.ghost:hover {
+      background: rgba(24, 144, 255, 0.1);
+    }
+    
+    .input {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 1rem;
+    }
+    
+    .status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: #e6f7ff;
+      color: var(--brand);
+    }
+    
+    /* Alert items */
+    .alert-item {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .alert-item:last-child {
+      border-bottom: none;
+    }
+    
+    .alert-icon {
+      font-size: 1.5rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .alert-content {
+      flex: 1;
+    }
+    
+    .alert-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .alert-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    
+    .alert-time {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    
+    .alert-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    /* Modal styles */
+    .family-member-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    
+    .family-member-content {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 600px;
+      overflow: hidden;
+    }
+    
+    .family-member-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .family-member-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    /* Payment method selection */
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .payment-method {
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .payment-method.selected {
+      border-color: var(--brand);
+      background-color: rgba(24, 144, 255, 0.05);
+    }
+    
+    .payment-method-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    
+    /* Consultation interface */
+    .consultation-tools {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    
+    .consultation-tool-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .consultation-tool-btn:hover {
+      border-color: var(--brand);
+      background: rgba(24, 144, 255, 0.05);
+    }
+  </style>
+</head>
+<body>
+  <section id="alerts" class="section" aria-labelledby="alerts-tab">
+    <h2 class="title">Alerts & Follow-up</h2>
+    
+    <!-- Alert Summary Cards -->
+    <div class="row" style="margin-bottom:20px">
+      <div class="col">
+        <div class="card" style="background:linear-gradient(135deg, #f0f9ff, #e6f7ff);border-left:4px solid #1890ff">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:2rem">💊</div>
+            <div>
+              <div style="font-weight:800;color:#1890ff" id="refillCount">2</div>
+              <div class="small">Medicine Refills</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card" style="background:linear-gradient(135deg, #f6ffed, #fcffe6);border-left:4px solid #52c41a">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:2rem">🔄</div>
+            <div>
+              <div style="font-weight:800;color:#52c41a" id="followupCount">1</div>
+              <div class="small">Follow-ups</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card" style="background:linear-gradient(135deg, #fff2e8, #fff7e6);border-left:4px solid #fa8c16">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:2rem">📅</div>
+            <div>
+              <div style="font-weight:800;color:#fa8c16" id="appointmentCount">1</div>
+              <div class="small">Upcoming</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs for different alert types -->
+    <div class="card">
+      <div style="display:flex;gap:8px;border-bottom:1px solid #eef6f2;margin-bottom:16px">
+        <button class="pill active" data-alert-type="all" onclick="switchAlertTab(this)">All Alerts</button>
+        <button class="pill" data-alert-type="refill" onclick="switchAlertTab(this)">Medicine Refills</button>
+        <button class="pill" data-alert-type="followup" onclick="switchAlertTab(this)">Follow-ups</button>
+        <button class="pill" data-alert-type="consultation" onclick="switchAlertTab(this)">Consultations</button>
+      </div>
+      
+      <div id="alertsList">
+        <!-- Alerts will be populated by JavaScript -->
+      </div>
+      
+      <div id="noAlerts" style="display:none;text-align:center;padding:40px 20px">
+        <div style="font-size:3rem;margin-bottom:16px">🎉</div>
+        <div style="font-weight:700;margin-bottom:8px">No pending alerts</div>
+        <div class="small muted">You're all caught up!</div>
+      </div>
+    </div>
+    
+    <!-- Consultation Management Section (shown when there's an active consultation) -->
+    <div id="consultationSection" class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 style="margin:0">Active Consultation</h3>
+        <div class="small muted" id="consultationStatus">Waiting for doctor to join</div>
+      </div>
+      
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:20px;padding:16px;background:#f7fff9;border-radius:12px">
+        <div style="width:60px;height:60px;border-radius:10px;background:#eaf7f0;display:grid;place-items:center;font-weight:800;color:var(--brand);font-size:1.2rem" id="consultDoctorAvatar">AS</div>
+        <div style="flex:1">
+          <div style="font-weight:800" id="consultDoctorName">Dr. Amanpreet Singh</div>
+          <div class="small muted" id="consultDoctorSpec">General Physician • DOC-14237</div>
+          <div class="small" id="consultTime">Scheduled: Today, 3:00 PM</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="joinConsultBtn" onclick="joinConsultation()">Join Consultation</button>
+          <button class="btn ghost" onclick="rescheduleConsultation()">Reschedule</button>
+        </div>
+      </div>
+      
+      <!-- Consultation Actions (shown after payment) -->
+      <div id="consultActions">
+        <div style="font-weight:700;margin-bottom:12px">Consultation Options</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));gap:12px">
+          <button class="btn ghost" onclick="startChat()">
+            <div style="font-size:1.5rem">💬</div>
+            <div>Chat</div>
+          </button>
+          <button class="btn ghost" onclick="requestCall()">
+            <div style="font-size:1.5rem">📞</div>
+            <div>Voice Call</div>
+          </button>
+          <button class="btn ghost" onclick="requestVideoCall()">
+            <div style="font-size:1.5rem">🎥</div>
+            <div>Video Call</div>
+          </button>
+          <button class="btn ghost" onclick="viewPrescription()">
+            <div style="font-size:1.5rem">📝</div>
+            <div>Prescription</div>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="family-member-panel hidden">
+      <div class="family-member-content" style="max-width:500px">
+        <div class="family-member-header">
+          <h3>Consultation Payment</h3>
+          <button class="family-member-close" onclick="closePaymentModal()">&times;</button>
+        </div>
+        <div id="paymentContent" style="padding: 20px;">
+          <div style="text-align:center;margin-bottom:20px">
+            <div style="font-size:2.5rem">💳</div>
+            <div style="font-weight:700;font-size:1.5rem;margin:10px 0">₹ <span id="consultationFee">500</span></div>
+            <div class="small muted">Consultation fee for <span id="paymentDoctorName">Dr. Amanpreet Singh</span></div>
+          </div>
+          
+          <div style="margin-bottom:20px">
+            <div style="font-weight:700;margin-bottom:8px">Select Payment Method</div>
+            <div class="payment-methods">
+              <div class="payment-method selected" data-method="card" onclick="selectPaymentMethod(this)">
+                <div class="payment-method-icon">💳</div>
+                <div>Card</div>
+              </div>
+              <div class="payment-method" data-method="upi" onclick="selectPaymentMethod(this)">
+                <div class="payment-method-icon">📱</div>
+                <div>UPI</div>
+              </div>
+              <div class="payment-method" data-method="netbanking" onclick="selectPaymentMethod(this)">
+                <div class="payment-method-icon">🏦</div>
+                <div>Net Banking</div>
+              </div>
+              <div class="payment-method" data-method="wallet" onclick="selectPaymentMethod(this)">
+                <div class="payment-method-icon">📲</div>
+                <div>Wallet</div>
+              </div>
+            </div>
+          </div>
+          
+          <div id="cardPaymentForm">
+            <div style="margin-bottom:12px">
+              <div class="small" style="font-weight:600;margin-bottom:4px">Card Number</div>
+              <input type="text" class="input" placeholder="1234 5678 9012 3456" style="width:100%">
+            </div>
+            <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px">
+              <div>
+                <div class="small" style="font-weight:600;margin-bottom:4px">Expiry Date</div>
+                <input type="text" class="input" placeholder="MM/YY">
+              </div>
+              <div>
+                <div class="small" style="font-weight:600;margin-bottom:4px">CVV</div>
+                <input type="text" class="input" placeholder="123">
+              </div>
+            </div>
+            <div style="margin-bottom:20px">
+              <div class="small" style="font-weight:600;margin-bottom:4px">Cardholder Name</div>
+              <input type="text" class="input" placeholder="Gurpreet Kaur" style="width:100%">
+            </div>
+          </div>
+          
+          <div id="upiPaymentForm" class="hidden">
+            <div style="margin-bottom:12px">
+              <div class="small" style="font-weight:600;margin-bottom:4px">UPI ID</div>
+              <input type="text" class="input" placeholder="gurpreet@upi" style="width:100%">
+            </div>
+          </div>
+          
+          <div id="netbankingPaymentForm" class="hidden">
+            <div style="margin-bottom:12px">
+              <div class="small" style="font-weight:600;margin-bottom:4px">Select Bank</div>
+              <select class="input" style="width:100%">
+                <option value="">Select your bank</option>
+                <option value="sbi">State Bank of India</option>
+                <option value="hdfc">HDFC Bank</option>
+                <option value="icici">ICICI Bank</option>
+                <option value="axis">Axis Bank</option>
+              </select>
+            </div>
+          </div>
+          
+          <div id="walletPaymentForm" class="hidden">
+            <div style="margin-bottom:12px">
+              <div class="small" style="font-weight:600;margin-bottom:4px">Select Wallet</div>
+              <select class="input" style="width:100%">
+                <option value="">Select your wallet</option>
+                <option value="paytm">Paytm</option>
+                <option value="phonepe">PhonePe</option>
+                <option value="gpay">Google Pay</option>
+                <option value="amazonpay">Amazon Pay</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="btn" style="width:100%" onclick="processPayment()">Pay Now</button>
+          
+          <div class="small muted" style="text-align:center;margin-top:12px">
+            Your payment is secure and encrypted
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Payment Success Modal -->
+    <div id="paymentSuccessModal" class="family-member-panel hidden">
+      <div class="family-member-content" style="max-width:450px; text-align: center;">
+        <div class="family-member-header">
+          <h3>Payment Successful</h3>
+          <button class="family-member-close" onclick="closePaymentSuccessModal()">&times;</button>
+        </div>
+        <div style="padding: 30px 20px;">
+          <div style="font-size: 4rem; margin-bottom: 20px;">✅</div>
+          <h3 style="margin-bottom: 10px; color: var(--success);">Payment Completed Successfully</h3>
+          <p class="muted" style="margin-bottom: 20px;">Your consultation with Dr. Amanpreet Singh has been confirmed.</p>
+          <div style="background: #f7f7f7; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: left;">
+            <p><strong>Consultation ID:</strong> CON-789456</p>
+            <p><strong>Amount Paid:</strong> ₹500</p>
+            <p><strong>Payment Method:</strong> Credit Card</p>
+            <p><strong>Date:</strong> <span id="paymentDate"></span></p>
+          </div>
+          <button class="btn" style="width: 100%;" onclick="closePaymentSuccessModal()">Continue to Consultation</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- In-Consultation Interface -->
+    <div id="consultationInterface" class="family-member-panel hidden">
+      <div style="padding:20px;height:100%; width: 100%; max-width: 1200px; background: white; border-radius: 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <h3 style="margin:0">Consultation with <span id="activeDoctorName">Dr. Amanpreet Singh</span></h3>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="status" id="callStatus">Connected</div>
+            <div id="callTimer">00:00</div>
+            <button class="btn ghost" onclick="toggleAudio()" id="audioBtn">🔇</button>
+            <button class="btn ghost" onclick="toggleVideo()" id="videoBtn">📹</button>
+            <button class="btn" style="background:var(--danger)" onclick="endConsultation()">End</button>
+          </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:3fr 1fr;gap:16px;height:calc(100% - 80px)">
+          <div style="background:#1a1a1a;border-radius:12px;position:relative;display:flex;justify-content:center;align-items:center">
+            <div id="videoContainer">
+              <div style="text-align:center;color:white">
+                <div style="font-size:4rem">👨‍⚕️</div>
+                <div>Dr. Amanpreet Singh</div>
+                <div class="small muted">Video will start shortly</div>
+              </div>
+            </div>
+            <div style="position:absolute;bottom:16px;left:16px;background:rgba(0,0,0,0.5);color:white;padding:8px 12px;border-radius:8px">
+              <div>Gurpreet Kaur</div>
+            </div>
+          </div>
+          
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="background:#f7f7f7;border-radius:12px;padding:12px;flex:1">
+              <div style="font-weight:700;margin-bottom:12px">Chat</div>
+              <div id="chatMessages" style="height:200px;overflow-y:auto;margin-bottom:12px">
+                <!-- Chat messages will appear here -->
+                <div style="margin-bottom: 10px;">
+                  <div class="small muted">Dr. Amanpreet Singh joined the consultation</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <input type="text" class="input" placeholder="Type a message..." style="flex:1">
+                <button class="btn">Send</button>
+              </div>
+            </div>
+            
+            <div style="background:#f7f7f7;border-radius:12px;padding:12px">
+              <div style="font-weight:700;margin-bottom:12px">Consultation Tools</div>
+              <div class="consultation-tools">
+                <button class="consultation-tool-btn" onclick="shareFile()">
+                  <div style="font-size:1.5rem">📁</div>
+                  <div>Share File</div>
+                </button>
+                <button class="consultation-tool-btn" onclick="requestPrescription()">
+                  <div style="font-size:1.5rem">📝</div>
+                  <div>Prescription</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Demo data for alerts
+    const demoAlerts = [
+      {
+        id: 1,
+        type: 'refill',
+        title: 'Medicine Refill Due',
+        description: 'Metformin 500mg tablets - 3 days remaining',
+        time: 'Due in 3 days',
+        icon: '💊',
+        color: '#1890ff',
+        action: 'Refill Now'
+      },
+      {
+        id: 2,
+        type: 'refill',
+        title: 'Medicine Refill Due',
+        description: 'Atorvastatin 20mg tablets - 5 days remaining',
+        time: 'Due in 5 days',
+        icon: '💊',
+        color: '#1890ff',
+        action: 'Refill Now'
+      },
+      {
+        id: 3,
+        type: 'followup',
+        title: 'Follow-up Appointment',
+        description: 'Follow-up with Dr. Sharma for diabetes management',
+        time: 'Scheduled for tomorrow',
+        icon: '🔄',
+        color: '#52c41a',
+        action: 'View Details'
+      },
+      {
+        id: 4,
+        type: 'consultation',
+        title: 'Upcoming Video Consultation',
+        description: 'Video consultation with Dr. Amanpreet Singh',
+        time: 'Today at 3:00 PM',
+        icon: '🎥',
+        color: '#fa8c16',
+        action: 'Join Now'
+      }
+    ];
+
+    // Initialize the page with demo data
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set current date for payment success modal
+      const now = new Date();
+      document.getElementById('paymentDate').textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+      
+      // Load alerts
+      loadAlerts('all');
+      
+      // Show consultation section for demo purposes
+      document.getElementById('consultationSection').style.display = 'block';
+      document.getElementById('consultActions').style.display = 'none'; // Hide until payment
+    });
+
+    // Function to load alerts based on type
+    function loadAlerts(type) {
+      const alertsList = document.getElementById('alertsList');
+      const noAlerts = document.getElementById('noAlerts');
+      
+      // Clear existing alerts
+      alertsList.innerHTML = '';
+      
+      // Filter alerts based on type
+      let filteredAlerts = demoAlerts;
+      if (type !== 'all') {
+        filteredAlerts = demoAlerts.filter(alert => alert.type === type);
+      }
+      
+      // Update counts
+      document.getElementById('refillCount').textContent = demoAlerts.filter(a => a.type === 'refill').length;
+      document.getElementById('followupCount').textContent = demoAlerts.filter(a => a.type === 'followup').length;
+      document.getElementById('appointmentCount').textContent = demoAlerts.filter(a => a.type === 'consultation').length;
+      
+      // Show no alerts message if none
+      if (filteredAlerts.length === 0) {
+        noAlerts.style.display = 'block';
+        return;
+      }
+      
+      noAlerts.style.display = 'none';
+      
+      // Add alerts to the list
+      filteredAlerts.forEach(alert => {
+        const alertElement = document.createElement('div');
+        alertElement.className = 'alert-item';
+        alertElement.innerHTML = `
+          <div class="alert-icon" style="background: ${alert.color}20; color: ${alert.color}">
+            ${alert.icon}
+          </div>
+          <div class="alert-content">
+            <div class="alert-title">${alert.title}</div>
+            <div class="alert-desc">${alert.description}</div>
+            <div class="alert-time">${alert.time}</div>
+          </div>
+          <div class="alert-actions">
+            <button class="btn" style="background: ${alert.color}" onclick="handleAlertAction(${alert.id})">
+              ${alert.action}
+            </button>
+          </div>
+        `;
+        alertsList.appendChild(alertElement);
+      });
+    }
+
+    // Switch between alert tabs
+    function switchAlertTab(button) {
+      // Remove active class from all pills
+      document.querySelectorAll('.pill').forEach(pill => {
+        pill.classList.remove('active');
+      });
+      
+      // Add active class to clicked pill
+      button.classList.add('active');
+      
+      // Load alerts for the selected type
+      const alertType = button.getAttribute('data-alert-type');
+      loadAlerts(alertType);
+    }
+
+    // Handle alert action button click
+    function handleAlertAction(alertId) {
+      const alert = demoAlerts.find(a => a.id === alertId);
+      
+      if (alert.type === 'consultation') {
+        // Show payment modal for consultations
+        showPaymentModal();
+      } else if (alert.type === 'refill') {
+        alert('Redirecting to pharmacy for refill...');
+      } else {
+        alert(`Action for: ${alert.title}`);
+      }
+    }
+
+    // Show payment modal
+    function showPaymentModal() {
+      document.getElementById('paymentModal').classList.remove('hidden');
+    }
+
+    // Close payment modal
+    function closePaymentModal() {
+      document.getElementById('paymentModal').classList.add('hidden');
+    }
+
+    // Select payment method
+    function selectPaymentMethod(element) {
+      // Remove selected class from all methods
+      document.querySelectorAll('.payment-method').forEach(method => {
+        method.classList.remove('selected');
+      });
+      
+      // Add selected class to clicked method
+      element.classList.add('selected');
+      
+      // Show the appropriate form
+      const method = element.getAttribute('data-method');
+      document.getElementById('cardPaymentForm').classList.add('hidden');
+      document.getElementById('upiPaymentForm').classList.add('hidden');
+      document.getElementById('netbankingPaymentForm').classList.add('hidden');
+      document.getElementById('walletPaymentForm').classList.add('hidden');
+      
+      document.getElementById(`${method}PaymentForm`).classList.remove('hidden');
+    }
+
+    // Process payment
+    function processPayment() {
+      // Simulate payment processing
+      setTimeout(() => {
+        closePaymentModal();
+        document.getElementById('paymentSuccessModal').classList.remove('hidden');
+        
+        // Show consultation options after payment
+        document.getElementById('consultActions').style.display = 'block';
+        document.getElementById('joinConsultBtn').textContent = 'Start Consultation';
+      }, 1500);
+    }
+
+    // Close payment success modal
+    function closePaymentSuccessModal() {
+      document.getElementById('paymentSuccessModal').classList.add('hidden');
+    }
+
+    // Join consultation
+    function joinConsultation() {
+      document.getElementById('consultationInterface').classList.remove('hidden');
+      
+      // Start a timer for the call
+      let seconds = 0;
+      const timer = setInterval(() => {
+        seconds++;
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        document.getElementById('callTimer').textContent = 
+          `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    // End consultation
+    function endConsultation() {
+      document.getElementById('consultationInterface').classList.add('hidden');
+      alert('Consultation ended successfully.');
+    }
+
+    // Toggle audio
+    function toggleAudio() {
+      const audioBtn = document.getElementById('audioBtn');
+      audioBtn.textContent = audioBtn.textContent === '🔇' ? '🔊' : '🔇';
+    }
+
+    // Toggle video
+    function toggleVideo() {
+      const videoBtn = document.getElementById('videoBtn');
+      videoBtn.textContent = videoBtn.textContent === '📹' ? '📷' : '📹';
+    }
+
+    // Other functions for demonstration
+    function rescheduleConsultation() {
+      alert('Redirecting to appointment rescheduling...');
+    }
+
+    function startChat() {
+      alert('Opening chat with doctor...');
+    }
+
+    function requestCall() {
+      alert('Requesting voice call with doctor...');
+    }
+
+    function requestVideoCall() {
+      alert('Requesting video call with doctor...');
+    }
+
+    function viewPrescription() {
+      alert('Opening prescription...');
+    }
+
+    function shareFile() {
+      alert('Opening file sharing options...');
+    }
+
+    function requestPrescription() {
+      alert('Requesting prescription from doctor...');
+    }
+  </script>
+</body>
+</html>

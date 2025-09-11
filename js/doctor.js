@@ -1487,3 +1487,75 @@ function loadChatHistory(patientId) {
   addMessageToChat("Hello, how can I help you today?", 'sent', new Date(Date.now() - 300000));
 }
  
+
+/* Add to your JavaScript */
+function toggleMobileMenu() {
+  document.querySelector('.mobile-sidebar').classList.toggle('open');
+  document.querySelector('.sidebar-overlay').classList.toggle('open');
+}
+
+function closeMobileMenu() {
+  document.querySelector('.mobile-sidebar').classList.remove('open');
+  document.querySelector('.sidebar-overlay').classList.remove('open');
+}
+
+// Add click event to overlay to close sidebar
+document.querySelector('.sidebar-overlay').addEventListener('click', closeMobileMenu);
+
+// Add navigation items to mobile footer
+function initMobileFooter() {
+  const footerNav = document.querySelector('.mobile-footer-nav');
+  const navItems = [
+    { icon: '👤', text: 'Profile', tab: 'profile' },
+    { icon: '🧑‍🤝‍🧑', text: 'Patients', tab: 'patients' },
+    { icon: '💊', text: 'Stock', tab: 'stock' },
+    { icon: '🗂️', text: 'Log', tab: 'Report' },
+    { icon: '⚙️', text: 'Settings', tab: 'settings' }
+  ];
+  
+  footerNav.innerHTML = navItems.map(item => `
+    <a class="mobile-footer-item" data-tab="${item.tab}" onclick="openTab('${item.tab}'); closeMobileMenu();">
+      <div>${item.icon}</div>
+      <span>${item.text}</span>
+    </a>
+  `).join('');
+}
+
+// Update active state on mobile footer
+function updateMobileFooterActive(tab) {
+  document.querySelectorAll('.mobile-footer-item').forEach(item => {
+    item.classList.remove('active');
+    if (item.dataset.tab === tab) {
+      item.classList.add('active');
+    }
+  });
+}
+
+// Modify openTab function to update mobile footer
+function openTab(id) {
+  sections.forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if (id === 'patients') renderPatients();
+  if (id === 'stock') renderStock();
+  
+  // Update mobile footer active state
+  if (typeof updateMobileFooterActive === 'function') {
+    updateMobileFooterActive(id);
+  }
+}
+
+
+// Initialize mobile footer when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // ... existing code ...
+  
+  // Initialize mobile navigation
+  if (typeof initMobileFooter === 'function') {
+    initMobileFooter();
+  }
+  
+  // Set initial active tab on mobile footer
+  if (typeof updateMobileFooterActive === 'function') {
+    updateMobileFooterActive(currentTab);
+  }
+});
