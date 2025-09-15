@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NabhaCare - Pharmacist Registration</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand: #2c6d52;
+      --accent: #53b89a;
+      --bg: #f4f7f6;
+      --card: #ffffff;
+      --muted: #6b7b70;
+      --danger: #d9534f;
+      --ok: #2f9b6a;
+      --warning: #f0ad4e;
+      --shadow: 0 10px 30px rgba(44, 109, 82, 0.08);
+      --radius: 14px;
+      --glass: rgba(255, 255, 255, 0.7);
+      --transition: 280ms cubic-bezier(0.2, 0.9, 0.2, 1);
+      --max-width: 1200px;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', Segoe UI, system-ui, -apple-system, Arial;
+      background: var(--bg);
+      color: #1f3328;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    /* NAV - Matches patient portal exactly */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      height: 64px;
+      background: linear-gradient(90deg, var(--brand), var(--accent));
+      color: #fff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      box-shadow: 0 6px 18px rgba(44, 109, 82, 0.22);
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+    
+    .brand div {
+      line-height: 1.2;
+    }
+    
+    .brand div div:first-child {
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    
+    .brand small {
+      opacity: 0.9;
+      font-size: 0.85rem;
+    }
+    
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .chip {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.44);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .btn {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .btn:hover {
+      background: var(--accent);
+    }
+    
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    
+    .btn.ghost:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    /* MAIN CONTENT */
+    .main {
+      margin-top: 64px;
+      padding: 20px;
+      min-height: calc(100vh - 64px);
+      display: flex;
+      justify-content: center;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+    
+    .title {
+      font-size: 1.8rem;
+      color: var(--brand);
+      margin: 0 0 8px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    
+    /* Form Styling */
+    .form-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    
+    .form-section {
+      margin-bottom: 32px;
+    }
+    
+    .form-section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .section-title {
+      font-size: 1.2rem;
+      color: var(--brand);
+      margin-bottom: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .section-icon {
+      font-size: 1.4rem;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #1f3328;
+    }
+    
+    .required {
+      color: var(--danger);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.6px solid #e6efe8;
+      border-radius: 10px;
+      background: var(--card);
+      font-family: inherit;
+      font-weight: 500;
+      transition: border-color 0.2s;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    /* Photo Upload */
+    .photo-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .photo-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #e6efe8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      border: 3px solid var(--accent);
+    }
+    
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .photo-preview .placeholder {
+      font-size: 3rem;
+      color: var(--muted);
+    }
+    
+    .photo-upload-btn {
+      background: var(--primary-lighter);
+      color: var(--brand);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .photo-upload-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+    
+    /* Document Upload */
+    .document-upload {
+      border: 2px dashed #e6efe8;
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+      transition: border-color 0.2s;
+      margin-bottom: 16px;
+    }
+    
+    .document-upload:hover {
+      border-color: var(--accent);
+    }
+    
+    .document-upload-icon {
+      font-size: 2.5rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    
+    .document-list {
+      margin-top: 16px;
+      text-align: left;
+    }
+    
+    .document-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      background: var(--bg);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .document-name {
+      font-weight: 500;
+    }
+    
+    .document-size {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    
+    .remove-document {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    
+    /* Checkbox Group */
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+      accent-color: var(--brand);
+    }
+    
+    /* Radio Group */
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .radio-item input[type="radio"] {
+      width: auto;
+      accent-color: var(--brand);
+    }
+    
+    /* Form Actions */
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #e6efe8;
+    }
+    
+    .btn-secondary {
+      background: #e6efe8;
+      color: var(--brand);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--accent);
+      color: white;
+    }
+    
+    /* Success Message */
+    .success-message {
+      background: #ecfff7;
+      border-left: 4px solid var(--ok);
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      display: none;
+    }
+    
+    .success-message.show {
+      display: block;
+    }
+    
+    .success-message h3 {
+      color: var(--ok);
+      margin-bottom: 8px;
+    }
+    
+    /* Pharmacy Type Card */
+    .pharmacy-type-card {
+      border: 2px solid #e6efe8;
+      border-radius: 10px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 12px;
+    }
+    
+    .pharmacy-type-card:hover {
+      border-color: var(--accent);
+      background: var(--primary-lighter);
+    }
+    
+    .pharmacy-type-card.selected {
+      border-color: var(--brand);
+      background: var(--primary-lighter);
+    }
+    
+    .pharmacy-type-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .pharmacy-type-icon {
+      font-size: 2rem;
+    }
+    
+    .pharmacy-type-title {
+      font-weight: 600;
+      color: var(--brand);
+    }
+    
+    .pharmacy-type-desc {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .radio-group {
+        flex-direction: column;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .nav {
+        padding: 0 16px;
+      }
+      
+      .main {
+        padding: 16px;
+      }
+      
+      .form-card {
+        padding: 16px;
+      }
+    }
+    
+    /* Utility classes */
+    .muted {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    
+    .small {
+      font-size: 0.9rem;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV - Matches patient portal exactly -->
+  <header class="nav" role="banner">
+    <div class="brand">
+      <div class="logo">NC</div>
+      <div>
+        <div style="font-weight:800">NabhaCare</div>
+        <div style="font-size:12px;opacity:.9">Pharmacist Registration</div>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <div class="chip">Pharmacist Registration</div>
+      <button class="btn ghost" onclick="window.location.href='auth.html'">Back to Home</button>
+    </div>
+  </header>
+  
+  <!-- MAIN CONTENT -->
+  <main class="main" role="main">
+    <div class="container">
+      <h1 class="title">Pharmacist Registration</h1>
+      <p class="subtitle">Please complete your profile to join NabhaCare. All information will be verified by our admin team.</p>
+      
+      <div class="success-message" id="successMessage">
+        <h3>Registration Submitted Successfully!</h3>
+        <p>Your information has been submitted for verification. You will receive a confirmation email once your account is approved.</p>
+      </div>
+      
+      <form id="pharmacistRegistrationForm">
+        <!-- Personal Information Section -->
+        <div class="form-card">
+          <div class="form-section">
+            <h2 class="section-title">
+              <span class="section-icon">👤</span>
+              Personal Information
+            </h2>
+            
+            <div class="photo-upload">
+              <div class="photo-preview" id="photoPreview">
+                <span class="placeholder">💊</span>
+              </div>
+              <input type="file" id="photoUpload" accept="image/*" style="display: none;">
+              <button type="button" class="photo-upload-btn" onclick="document.getElementById('photoUpload').click()">
+                Upload Profile Photo
+              </button>
+              <p class="small muted">Recommended: Square image, at least 300x300px</p>
+            </div>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="fullName">Full Name <span class="required">*</span></label>
+                <input type="text" id="fullName" name="fullName" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="phone">Phone Number <span class="required">*</span></label>
+                <input type="tel" id="phone" name="phone" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="dob">Date of Birth <span class="required">*</span></label>
+                <input type="date" id="dob" name="dob" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="gender">Gender <span class="required">*</span></label>
+                <select id="gender" name="gender" required>
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Professional Information Section -->
+        <div class="form-card">
+          <div class="form-section">
+            <h2 class="section-title">
+              <span class="section-icon">💊</span>
+              Professional Information
+            </h2>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="pciNumber">PCI Registration Number <span class="required">*</span></label>
+                <input type="text" id="pciNumber" name="pciNumber" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="stateLicense">State Pharmacy License Number <span class="required">*</span></label>
+                <input type="text" id="stateLicense" name="stateLicense" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="qualification">Pharmacy Qualification <span class="required">*</span></label>
+                <input type="text" id="qualification" name="qualification" placeholder="e.g., D.Pharm, B.Pharm, M.Pharm" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="experience">Years of Experience <span class="required">*</span></label>
+                <input type="number" id="experience" name="experience" min="0" required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="specializations">Areas of Specialization</label>
+              <select id="specializations" name="specializations" multiple>
+                <option value="clinical-pharmacy">Clinical Pharmacy</option>
+                <option value="hospital-pharmacy">Hospital Pharmacy</option>
+                <option value="community-pharmacy">Community Pharmacy</option>
+                <option value="industrial-pharmacy">Industrial Pharmacy</option>
+                <option value="regulatory-affairs">Regulatory Affairs</option>
+                <option value="pharmacology">Pharmacology</option>
+                <option value="pharmaceutics">Pharmaceutics</option>
+                <option value="pharmacognosy">Pharmacognosy</option>
+              </select>
+              <p class="small muted">Hold Ctrl/Cmd to select multiple specializations</p>
+            </div>
+            
+            <div class="form-group">
+              <label for="bio">Professional Bio <span class="required">*</span></label>
+              <textarea id="bio" name="bio" placeholder="Brief description of your professional background, expertise, and areas of interest..." required></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pharmacy Information Section -->
+        <div class="form-card">
+          <div class="form-section">
+            <h2 class="section-title">
+              <span class="section-icon">🏥</span>
+              Pharmacy Information
+            </h2>
+            
+            <div class="form-group">
+              <label>Pharmacy Type <span class="required">*</span></label>
+              <div class="pharmacy-type-card" onclick="selectPharmacyType(this, 'independent')">
+                <div class="pharmacy-type-header">
+                  <span class="pharmacy-type-icon">🏪</span>
+                  <div>
+                    <div class="pharmacy-type-title">Independent Pharmacy</div>
+                    <div class="pharmacy-type-desc">You own or manage an independent pharmacy</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="pharmacy-type-card" onclick="selectPharmacyType(this, 'chain')">
+                <div class="pharmacy-type-header">
+                  <span class="pharmacy-type-icon">🏬</span>
+                  <div>
+                    <div class="pharmacy-type-title">Chain Pharmacy</div>
+                    <div class="pharmacy-type-desc">You work at a chain or franchise pharmacy</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="pharmacy-type-card" onclick="selectPharmacyType(this, 'hospital')">
+                <div class="pharmacy-type-header">
+                  <span class="pharmacy-type-icon">🏥</span>
+                  <div>
+                    <div class="pharmacy-type-title">Hospital Pharmacy</div>
+                    <div class="pharmacy-type-desc">You work at a hospital or medical center pharmacy</div>
+                  </div>
+                </div>
+              </div>
+              
+              <input type="hidden" id="pharmacyType" name="pharmacyType" required>
+            </div>
+            
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="pharmacyName">Pharmacy Name <span class="required">*</span></label>
+                <input type="text" id="pharmacyName" name="pharmacyName" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="pharmacyPhone">Pharmacy Phone <span class="required">*</span></label>
+                <input type="tel" id="pharmacyPhone" name="pharmacyPhone" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="pharmacyEmail">Pharmacy Email</label>
+                <input type="email" id="pharmacyEmail" name="pharmacyEmail">
+              </div>
+              
+              <div class="form-group">
+                <label for="drugLicenseNumber">Drug License Number <span class="required">*</span></label>
+                <input type="text" id="drugLicenseNumber" name="drugLicenseNumber" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="gstNumber">GST Number</label>
+                <input type="text" id="gstNumber" name="gstNumber">
+              </div>
+              
+              <div class="form-group full-width">
+                <label for="pharmacyAddress">Pharmacy Address <span class="required">*</span></label>
+                <textarea id="pharmacyAddress" name="pharmacyAddress" placeholder="Complete address of your pharmacy" required></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="pharmacyCity">City <span class="required">*</span></label>
+                <input type="text" id="pharmacyCity" name="pharmacyCity" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="pharmacyState">State <span class="required">*</span></label>
+                <input type="text" id="pharmacyState" name="pharmacyState" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="pharmacyPincode">Pincode <span class="required">*</span></label>
+                <input type="text" id="pharmacyPincode" name="pharmacyPincode" required>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Services Section -->
+        <div class="form-card">
+          <div class="form-section">
+            <h2 class="section-title">
+              <span class="section-icon">🛒</span>
+              Services & Inventory
+            </h2>
+            
+            <div class="form-group">
+              <label>Services Offered <span class="required">*</span></label>
+              <div class="checkbox-group">
+                <div class="checkbox-item">
+                  <input type="checkbox" id="prescription" name="services" value="prescription">
+                  <label for="prescription">Prescription Medicines</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="otc" name="services" value="otc">
+                  <label for="otc">OTC Medicines</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="surgical" name="services" value="surgical">
+                  <label for="surgical">Surgical Supplies</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="diagnostic" name="services" value="diagnostic">
+                  <label for="diagnostic">Diagnostic Equipment</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="healthcare" name="services" value="healthcare">
+                  <label for="healthcare">Healthcare Products</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="delivery" name="services" value="delivery">
+                  <label for="delivery">Home Delivery</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="consultation" name="services" value="consultation">
+                  <label for="consultation">Health Consultation</label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="inventory">Medicine Categories Available <span class="required">*</span></label>
+              <select id="inventory" name="inventory" multiple>
+                <option value="general-medicines">General Medicines</option>
+                <option value="antibiotics">Antibiotics</option>
+                <option value="pain-relief">Pain Relief</option>
+                <option value="cardiovascular">Cardiovascular</option>
+                <option value="diabetes">Diabetes Care</option>
+                <option value="respiratory">Respiratory</option>
+                <option value="gastrointestinal">Gastrointestinal</option>
+                <option value="dermatology">Dermatology</option>
+                <option value="pediatrics">Pediatrics</option>
+                <option value="women-health">Women's Health</option>
+                <option value="vitamins">Vitamins & Supplements</option>
+                <option value="ayurvedic">Ayurvedic</option>
+              </select>
+              <p class="small muted">Hold Ctrl/Cmd to select multiple categories</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Availability Section -->
+        <div class="form-card">
+          <div class="form-section">
+            <h2 class="section-title">
+              <span class="section-icon">📅</span>
+              Availability
+            </h2>
+            
+            <div class="form-group">
+              <label>Available Days <span class="required">*</span></label>
+              <div class="checkbox-group">
+                <div class="checkbox-item">
+                  <input type="checkbox" id="monday" name="availableDays" value="monday">
+                  <label for="monday">Monday</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="tuesday" name="availableDays" value="tuesday">
+                  <label for="tuesday">Tuesday</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="wednesday" name="availableDays" value="wednesday">
+                  <label for="wednesday">Wednesday</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="thursday" name="availableDays" value="thursday">
+                  <label for="thursday">Thursday</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="friday" name="availableDays" value="friday">
+                  <label for="friday">Friday</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="saturday" name="availableDays" value="saturday">
+                  <label for="saturday">Saturday</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="sunday" name="availableDays" value="sunday">
+                  <label for="sunday">Sunday</label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="startTime">Opening Time <span class="required">*</span></label>
+                <input type="time" id="startTime" name="startTime" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="endTime">Closing Time <span class="required">*</span></label>
+                <input type="time" id="endTime" name="endTime" required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="emergencyService">24/7 Emergency Service</label>
+              <div class="radio-group">
+                <div class="radio-item">
+                  <input type="radio" id="emergencyYes" name="emergencyService" value="yes">
+                  <label for="emergencyYes">Yes</label>
+                </div>
+                <div class="radio-item">
+                  <input type="radio" id="emergencyNo" name="emergencyService" value="no" checked>
+                  <label for="emergencyNo">No</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Document Upload Section -->
+        <div class="form-card">
+          <div class="form-section">
+            <h2 class="section-title">
+              <span class="section-icon">📄</span>
+              Document Upload
+            </h2>
+            <p class="muted">Please upload the following documents for verification. All documents must be clear and in PDF, JPG, or PNG format.</p>
+            
+            <div class="document-upload" id="pharmacyDegreeUpload">
+              <div class="document-upload-icon">📄</div>
+              <h3>Pharmacy Degree/Diploma Certificate</h3>
+              <p class="small muted">Click to upload or drag and drop</p>
+              <input type="file" id="pharmacyDegree" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+              <button type="button" class="photo-upload-btn" onclick="document.getElementById('pharmacyDegree').click()">
+                Select File
+              </button>
+              <div class="document-list" id="pharmacyDegreeList"></div>
+            </div>
+            
+            <div class="document-upload" id="pciUpload">
+              <div class="document-upload-icon">📄</div>
+              <h3>PCI Registration Certificate</h3>
+              <p class="small muted">Click to upload or drag and drop</p>
+              <input type="file" id="pciCertificate" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+              <button type="button" class="photo-upload-btn" onclick="document.getElementById('pciCertificate').click()">
+                Select File
+              </button>
+              <div class="document-list" id="pciCertificateList"></div>
+            </div>
+            
+            <div class="document-upload" id="stateLicenseUpload">
+              <div class="document-upload-icon">📄</div>
+              <h3>State Pharmacy License</h3>
+              <p class="small muted">Click to upload or drag and drop</p>
+              <input type="file" id="stateLicenseDoc" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+              <button type="button" class="photo-upload-btn" onclick="document.getElementById('stateLicenseDoc').click()">
+                Select File
+              </button>
+              <div class="document-list" id="stateLicenseList"></div>
+            </div>
+            
+            <div class="document-upload" id="drugLicenseUpload">
+              <div class="document-upload-icon">📄</div>
+              <h3>Drug License Certificate</h3>
+              <p class="small muted">Click to upload or drag and drop</p>
+              <input type="file" id="drugLicenseDoc" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+              <button type="button" class="photo-upload-btn" onclick="document.getElementById('drugLicenseDoc').click()">
+                Select File
+              </button>
+              <div class="document-list" id="drugLicenseList"></div>
+            </div>
+            
+            <div class="document-upload" id="idProofUpload">
+              <div class="document-upload-icon">📄</div>
+              <h3>ID Proof (Aadhaar/Passport)</h3>
+              <p class="small muted">Click to upload or drag and drop</p>
+              <input type="file" id="idProof" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+              <button type="button" class="photo-upload-btn" onclick="document.getElementById('idProof').click()">
+                Select File
+              </button>
+              <div class="document-list" id="idProofList"></div>
+            </div>
+            
+            <div class="document-upload" id="addressProofUpload">
+              <div class="document-upload-icon">📄</div>
+              <h3>Address Proof</h3>
+              <p class="small muted">Click to upload or drag and drop</p>
+              <input type="file" id="addressProof" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+              <button type="button" class="photo-upload-btn" onclick="document.getElementById('addressProof').click()">
+                Select File
+              </button>
+              <div class="document-list" id="addressProofList"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary">Save as Draft</button>
+          <button type="submit" class="btn">Submit for Verification</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  
+  <script>
+    // Photo upload preview
+    document.getElementById('photoUpload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const preview = document.getElementById('photoPreview');
+          preview.innerHTML = `<img src="${event.target.result}" alt="Profile Photo">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    // Pharmacy type selection
+    function selectPharmacyType(element, type) {
+      // Remove selected class from all cards
+      document.querySelectorAll('.pharmacy-type-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      
+      // Add selected class to clicked card
+      element.classList.add('selected');
+      
+      // Update hidden input
+      document.getElementById('pharmacyType').value = type;
+    }
+    
+    // Document upload handlers
+    const documentUploads = [
+      { inputId: 'pharmacyDegree', listId: 'pharmacyDegreeList' },
+      { inputId: 'pciCertificate', listId: 'pciCertificateList' },
+      { inputId: 'stateLicenseDoc', listId: 'stateLicenseList' },
+      { inputId: 'drugLicenseDoc', listId: 'drugLicenseList' },
+      { inputId: 'idProof', listId: 'idProofList' },
+      { inputId: 'addressProof', listId: 'addressProofList' }
+    ];
+    
+    documentUploads.forEach(upload => {
+      document.getElementById(upload.inputId).addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const list = document.getElementById(upload.listId);
+          const fileSize = (file.size / 1024 / 1024).toFixed(2);
+          
+          list.innerHTML = `
+            <div class="document-item">
+              <div>
+                <div class="document-name">${file.name}</div>
+                <div class="document-size">${fileSize} MB</div>
+              </div>
+              <button type="button" class="remove-document" onclick="removeDocument('${upload.inputId}', '${upload.listId}')">×</button>
+            </div>
+          `;
+        }
+      });
+    });
+    
+    function removeDocument(inputId, listId) {
+      document.getElementById(inputId).value = '';
+      document.getElementById(listId).innerHTML = '';
+    }
+    
+    // Form submission
+    document.getElementById('pharmacistRegistrationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Simple validation
+      const requiredFields = this.querySelectorAll('[required]');
+      let isValid = true;
+      
+      requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+          isValid = false;
+          field.style.borderColor = 'var(--danger)';
+        } else {
+          field.style.borderColor = '#e6efe8';
+        }
+      });
+      
+      // Check pharmacy type selection
+      const pharmacyType = document.getElementById('pharmacyType').value;
+      if (!pharmacyType) {
+        isValid = false;
+        alert('Please select a pharmacy type');
+      }
+      
+      // Check at least one day is selected
+      const availableDays = document.querySelectorAll('input[name="availableDays"]:checked');
+      if (availableDays.length === 0) {
+        isValid = false;
+        alert('Please select at least one available day');
+      }
+      
+      // Check at least one service is selected
+      const services = document.querySelectorAll('input[name="services"]:checked');
+      if (services.length === 0) {
+        isValid = false;
+        alert('Please select at least one service');
+      }
+      
+      if (isValid) {
+        // Show success message
+        document.getElementById('successMessage').classList.add('show');
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // In a real application, this would submit the form data to the server
+        console.log('Form submitted successfully');
+        
+        // Reset form after a delay
+        setTimeout(() => {
+          this.reset();
+          document.getElementById('photoPreview').innerHTML = '<span class="placeholder">💊</span>';
+          document.querySelectorAll('.document-list').forEach(list => {
+            list.innerHTML = '';
+          });
+          document.querySelectorAll('.pharmacy-type-card').forEach(card => {
+            card.classList.remove('selected');
+          });
+        }, 3000);
+      } else {
+        alert('Please fill in all required fields');
+      }
+    });
+    
+    // Drag and drop functionality for document uploads
+    const documentUploadElements = document.querySelectorAll('.document-upload');
+    
+    documentUploadElements.forEach(element => {
+      element.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--accent)';
+      });
+      
+      element.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '#e6efe8';
+      });
+      
+      element.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '#e6efe8';
+        
+        const inputId = this.querySelector('input[type="file"]').id;
+        const listId = this.querySelector('.document-list').id;
+        
+        if (e.dataTransfer.files.length) {
+          document.getElementById(inputId).files = e.dataTransfer.files;
+          const event = new Event('change', { bubbles: true });
+          document.getElementById(inputId).dispatchEvent(event);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

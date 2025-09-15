@@ -5,7 +5,6 @@ const requestOtpBtn = document.getElementById("requestOtpBtn");
 const phoneInput = document.getElementById("phone");
 const otpInput = document.getElementById("otp");
 const otpTimer = document.getElementById("otpTimer");
-
 let activeRole = "patient";
 let otpCountdown = null;
 let countdownTime = 60;
@@ -16,9 +15,15 @@ roleButtons.forEach((btn, index) => {
     document.querySelector(".role-btn.active").classList.remove("active");
     btn.classList.add("active");
     activeRole = btn.dataset.role;
-
-    // Four roles: Patient, Doctor, Pharmacist, Admin
-    indicator.style.transform = `translateX(${index * 100}%)`;
+    
+    // Calculate the exact position for the indicator
+    const buttonWidth = btn.offsetWidth;
+    const buttonLeft = btn.offsetLeft;
+    const togglePadding = 4; // Matches the padding in .role-toggle
+    
+    // Position the indicator precisely under the active button
+    indicator.style.width = `${buttonWidth}px`;
+    indicator.style.transform = `translateX(${buttonLeft - togglePadding}px)`;
     
     // Add a subtle scaling effect for better visual feedback
     btn.style.transform = "scale(0.95)";
@@ -26,6 +31,32 @@ roleButtons.forEach((btn, index) => {
       btn.style.transform = "scale(1)";
     }, 150);
   });
+});
+
+// Initialize the indicator position on page load
+window.addEventListener('load', () => {
+  const activeBtn = document.querySelector(".role-btn.active");
+  if (activeBtn) {
+    const buttonWidth = activeBtn.offsetWidth;
+    const buttonLeft = activeBtn.offsetLeft;
+    const togglePadding = 4;
+    
+    indicator.style.width = `${buttonWidth}px`;
+    indicator.style.transform = `translateX(${buttonLeft - togglePadding}px)`;
+  }
+});
+
+// Handle window resize to maintain proper indicator position
+window.addEventListener('resize', () => {
+  const activeBtn = document.querySelector(".role-btn.active");
+  if (activeBtn) {
+    const buttonWidth = activeBtn.offsetWidth;
+    const buttonLeft = activeBtn.offsetLeft;
+    const togglePadding = 4;
+    
+    indicator.style.width = `${buttonWidth}px`;
+    indicator.style.transform = `translateX(${buttonLeft - togglePadding}px)`;
+  }
 });
 
 // OTP request functionality
@@ -71,12 +102,10 @@ form.addEventListener("submit", (e) => {
   e.preventDefault();
   const phone = phoneInput.value;
   const otp = otpInput.value;
-
   if (!phone || !otp) {
     alert("Please fill in all fields!");
     return;
   }
-
   alert(`✅ Logged in as ${activeRole} with ${phone}`);
   // TODO: Redirect based on role
   // For example:
@@ -103,4 +132,3 @@ document.querySelectorAll('input').forEach(input => {
     input.parentElement.style.transform = 'translateY(0)';
   });
 });
-

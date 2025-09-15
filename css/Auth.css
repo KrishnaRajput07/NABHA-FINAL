@@ -137,6 +137,8 @@
 
   /* Toggle Switch */
  /* Improved role toggle with smooth animation */
+/* Toggle Switch */
+/* Improved role toggle with smooth animation */
 .role-toggle {
   display: flex;
   background: var(--color-primary-light);
@@ -149,7 +151,6 @@
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(44, 109, 82, 0.15);
 }
-
 .role-toggle button {
   flex: 1;
   background: none;
@@ -162,24 +163,20 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 600;
 }
-
 .role-toggle .active { 
   color: var(--color-white);
 }
-
 .role-indicator {
   position: absolute;
   top: 4px;
-  left: 4px;
   height: calc(100% - 8px);
-  width: calc(25% - 8px);
+  width: calc(25% - 4px); /* Fixed width for each role */
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   border-radius: 25px;
   z-index: 1;
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 4px 8px rgba(44, 109, 82, 0.2);
 }
-
   /* Form */
   form {
     display: flex;

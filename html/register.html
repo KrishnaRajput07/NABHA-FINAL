@@ -4,9 +4,360 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NabhaCare - Registration</title>
-  <link rel="stylesheet" href="/css/register.css">
   <style>
-    
+    :root {
+      --color-primary-dark: #2c6d52;
+      --color-primary: #53b89a;
+      --color-primary-light: #e1f3ec;
+      --color-background: #f1f7f3;
+      --color-text-primary: #233e2b;
+      --color-text-secondary: #5f7564;
+      --color-white: #ffffff;
+      --color-button-bg: #53b89a;
+      --color-button-hover: #449b7f;
+      --color-error: #e74c3c;
+      --color-success: #2ecc71;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body.reg-bg {
+      height: 100vh;
+      display: flex;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e1f3ec 0%, #f7fff9 100%);
+      overflow: hidden;
+    }
+    /* Left Side */
+    .reg-left {
+      flex: 1;
+      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtSoZuOZDV6zEqPuQ7lxQjDFuIoi4ZaDp86A&s') center/cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 2rem;
+      color: white;
+      min-height: 100vh;
+    }
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(44,109,82,0.6);
+    }
+    .reg-left-content {
+      position: relative;
+      text-align: center;
+      animation: fadeInLeft 1s ease;
+      max-width: 480px;
+    }
+    .reg-left-content h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .reg-left-content p {
+      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      line-height: 1.5;
+      font-style: italic;
+    }
+    /* Right Side */
+    .reg-right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      background: var(--color-white);
+      animation: fadeInRight 1s ease;
+      min-height: 100vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    /* Floating Background Elements */
+    .floating-bg span {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.1;
+      animation: float 12s infinite linear;
+    }
+    .floating-bg span:nth-child(1) { top: 10%; left: 20%; animation-duration: 15s; }
+    .floating-bg span:nth-child(2) { top: 30%; left: 70%; animation-duration: 20s; }
+    .floating-bg span:nth-child(3) { top: 60%; left: 40%; animation-duration: 18s; }
+    .floating-bg span:nth-child(4) { top: 80%; left: 10%; animation-duration: 22s; }
+    .floating-bg span:nth-child(5) { top: 50%; left: 90%; animation-duration: 25s; }
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.15; }
+      50% { transform: translateY(-30px) rotate(180deg); opacity: 0.25; }
+      100% { transform: translateY(0) rotate(360deg); opacity: 0.15; }
+    }
+    .reg-box {
+      width: 100%;
+      max-width: 480px;
+      padding: clamp(1.5rem, 4vh, 2.5rem);
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+      animation: slideUp 1.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 80%;
+      position: relative;
+      z-index: 2;
+    }
+    .logo-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 100%;
+      margin: 0 auto 1rem;
+      background: var(--color-primary-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+    }
+    .reg-title {
+      font-size: clamp(1.6rem, 2vw, 2rem);
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .reg-subtitle {
+      font-size: clamp(0.9rem, 1vw, 1rem);
+      color: var(--color-text-secondary);
+      margin-bottom: 2rem;
+      font-style: italic;
+      text-align: center;
+    }
+    /* Form */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      flex: 1;
+    }
+    label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 4px;
+      display: block;
+    }
+    select, input {
+      width: 100%;
+      padding: clamp(10px, 1.2vh, 14px);
+      border-radius: 8px;
+      border: 1.8px solid #cfd8d3;
+      font-size: clamp(0.9rem, 1vw, 1rem);
+      transition: all 0.3s ease;
+    }
+    select:focus, input:focus {
+      border-color: var(--color-primary);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(83,184,154,0.2);
+    }
+    .submit-btn {
+      margin-top: auto;
+      padding: clamp(12px, 1.5vh, 14px);
+      border: none;
+      border-radius: 10px;
+      font-size: clamp(1rem, 1.2vw, 1.1rem);
+      font-weight: 600;
+      background: var(--color-button-bg);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .submit-btn:hover {
+      background: var(--color-button-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(83,184,154,0.3);
+    }
+    .role-toggle {
+      display: flex;
+      gap: 8px;
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    .role-btn {
+      flex: 1;
+      padding: 10px 0;
+      border: 1.5px solid #cfd8d3;
+      border-radius: 8px;
+      background: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .role-btn:hover {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+    }
+    .role-btn.active {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary-dark);
+    }
+    /* OTP Section */
+    .otp-section {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    .otp-input-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .otp-input {
+      width: 45px;
+      height: 45px;
+      text-align: center;
+      font-size: 1.2rem;
+      border: 2px solid #cfd8d3;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+    .otp-input:focus {
+      border-color: var(--color-primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(83,184,154,0.2);
+    }
+    .send-otp-btn {
+      padding: 10px 15px;
+      background: var(--color-primary-light);
+      color: var(--color-primary-dark);
+      border: 1.5px solid var(--color-primary);
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    .send-otp-btn:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+    .send-otp-btn:disabled {
+      background: #f1f1f1;
+      color: #a0a0a0;
+      border-color: #d0d0d0;
+      cursor: not-allowed;
+    }
+    .otp-timer {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin-top: 5px;
+      text-align: right;
+    }
+    .phone-input-container {
+      position: relative;
+    }
+    .error-message {
+      color: var(--color-error);
+      font-size: 0.8rem;
+      margin-top: 5px;
+      display: none;
+    }
+    .success-message {
+      color: var(--color-success);
+      font-size: 0.8rem;
+      margin-top: 5px;
+      display: none;
+    }
+    /* Success Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 450px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      transform: translateY(30px);
+      transition: all 0.3s ease;
+    }
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+    .modal-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    .modal-title {
+      font-size: 1.8rem;
+      color: var(--color-primary-dark);
+      margin-bottom: 1rem;
+    }
+    .modal-message {
+      color: var(--color-text-secondary);
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+    .modal-btn {
+      padding: 12px 24px;
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .modal-btn:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-2px);
+    }
+    /* Animations */
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    /* Responsive */
+    @media (max-width: 900px) {
+      body.reg-bg { flex-direction: column; height: auto; }
+      .reg-left { display: none; }
+      .reg-right { width: 100%; padding: 1.5rem; min-height: auto; }
+      .reg-box { min-height: auto; }
+      .otp-input-container {
+        justify-content: space-between;
+      }
+      .otp-input {
+        width: 40px;
+        height: 40px;
+      }
+    }
   </style>
 </head>
 <body class="reg-bg">
@@ -50,18 +401,273 @@
           <label for="age">Age</label>
           <input type="number" id="age" min="1" max="120" placeholder="Enter your age" required />
         </div>
-        <div>
+        <div class="phone-input-container">
           <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" placeholder="Enter phone number" required pattern="[0-9]{10}" />
+          <div style="display: flex; gap: 10px;">
+            <input type="tel" id="phone" placeholder="Enter phone number" required pattern="[0-9]{10}" />
+            <button type="button" id="sendOtpBtn" class="send-otp-btn">Send OTP</button>
+          </div>
+          <div id="phoneError" class="error-message">Please enter a valid 10-digit phone number</div>
+          <div id="otpSentMsg" class="success-message">OTP has been sent to your phone</div>
         </div>
-        <div>
-          <label for="otp">OTP</label>
-          <input type="text" id="otp" placeholder="Enter OTP" required />
+        <div id="otpSection" class="otp-section">
+          <label for="otp">Enter OTP</label>
+          <div class="otp-input-container">
+            <input type="text" class="otp-input" maxlength="1" data-index="0" />
+            <input type="text" class="otp-input" maxlength="1" data-index="1" />
+            <input type="text" class="otp-input" maxlength="1" data-index="2" />
+            <input type="text" class="otp-input" maxlength="1" data-index="3" />
+            <input type="text" class="otp-input" maxlength="1" data-index="4" />
+            <input type="text" class="otp-input" maxlength="1" data-index="5" />
+          </div>
+          <div class="otp-timer" id="otpTimer">02:00</div>
+          <div id="otpError" class="error-message">Invalid OTP. Please try again.</div>
+          <input type="hidden" id="otp" required />
         </div>
         <button type="submit" class="submit-btn">Register</button>
       </form>
     </div>
   </div>
-  <script src="/js/register.js"></script>
+  
+  <!-- Success Modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal">
+      <div class="modal-icon" id="modalIcon">✅</div>
+      <h2 class="modal-title" id="modalTitle">Registration Successful!</h2>
+      <p class="modal-message" id="modalMessage">You have successfully registered with NabhaCare.</p>
+      <button class="modal-btn" id="modalButton">Continue</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById("registerForm");
+      const roleButtons = document.querySelectorAll(".role-btn");
+      const sendOtpBtn = document.getElementById("sendOtpBtn");
+      const phoneInput = document.getElementById("phone");
+      const phoneError = document.getElementById("phoneError");
+      const otpSentMsg = document.getElementById("otpSentMsg");
+      const otpSection = document.getElementById("otpSection");
+      const otpInputs = document.querySelectorAll(".otp-input");
+      const otpTimer = document.getElementById("otpTimer");
+      const otpError = document.getElementById("otpError");
+      const hiddenOtp = document.getElementById("otp");
+      const successModal = document.getElementById("successModal");
+      const modalIcon = document.getElementById("modalIcon");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalMessage = document.getElementById("modalMessage");
+      const modalButton = document.getElementById("modalButton");
+      
+      let selectedRole = "patient"; // default
+      let otp = "";
+      let timerInterval;
+      let secondsRemaining = 120; // 2 minutes
+      
+      // Role selection
+      roleButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          roleButtons.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          selectedRole = btn.dataset.role;
+        });
+      });
+      
+      // Send OTP button handler
+      sendOtpBtn.addEventListener("click", function() {
+        const phone = phoneInput.value.trim();
+        
+        // Validate phone number
+        if (!isValidPhone(phone)) {
+          showError(phoneError, "Please enter a valid 10-digit phone number");
+          return;
+        }
+        
+        // Disable button and show loading state
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.textContent = "Sending...";
+        
+        // Simulate API call to send OTP (in production, this would connect to your backend)
+        setTimeout(() => {
+          // Generate a random 6-digit OTP
+          otp = generateOTP();
+          console.log(`OTP for ${phone}: ${otp}`); // For testing purposes
+          
+          // Show success message
+          hideError(phoneError);
+          showSuccess(otpSentMsg, "OTP has been sent to your phone");
+          
+          // Show OTP section
+          otpSection.style.display = "block";
+          
+          // Start timer
+          startOTPTimer();
+          
+          // Reset button after a delay
+          setTimeout(() => {
+            sendOtpBtn.textContent = "Resend OTP";
+            sendOtpBtn.disabled = false;
+          }, 2000);
+        }, 1500);
+      });
+      
+      // OTP input handling
+      otpInputs.forEach(input => {
+        input.addEventListener('input', function() {
+          const value = this.value;
+          const index = parseInt(this.dataset.index);
+          
+          // Auto-tab to next input
+          if (value.length === 1 && index < otpInputs.length - 1) {
+            otpInputs[index + 1].focus();
+          }
+          
+          // Validate OTP as user types
+          if (index === otpInputs.length - 1) {
+            validateOTP();
+          }
+        });
+        
+        // Allow backspace to go to previous input
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Backspace' && this.value === '' && parseInt(this.dataset.index) > 0) {
+            otpInputs[parseInt(this.dataset.index) - 1].focus();
+          }
+        });
+      });
+      
+      // Form submission
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("name").value;
+        const age = document.getElementById("age").value;
+        const phone = document.getElementById("phone").value;
+        const enteredOtp = getEnteredOTP();
+        
+        // Validate all fields
+        if(!selectedRole || !name || !age || !phone || !enteredOtp) {
+          alert("Please fill in all fields!");
+          return;
+        }
+        
+        // Validate OTP
+        if (enteredOtp !== otp) {
+          showError(otpError, "Invalid OTP. Please try again.");
+          return;
+        }
+        
+        // If everything is valid, show success modal
+        showSuccessModal(selectedRole, name);
+      });
+      
+      // Modal button handler
+      modalButton.addEventListener("click", function() {
+        if (selectedRole === "doctor") {
+          window.location.href = "doc_reg.html";
+        } else if (selectedRole === "pharmacist") {
+          window.location.href = "pharma_reg.html";
+        } else {
+          // For patients and admins, just close the modal
+          successModal.classList.remove("active");
+        }
+      });
+      
+      // Helper functions
+      function isValidPhone(phone) {
+        return /^[0-9]{10}$/.test(phone);
+      }
+      
+      function generateOTP() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+      }
+      
+      function startOTPTimer() {
+        secondsRemaining = 120;
+        updateTimerDisplay();
+        
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          secondsRemaining--;
+          updateTimerDisplay();
+          
+          if (secondsRemaining <= 0) {
+            clearInterval(timerInterval);
+            otp = ""; // Invalidate OTP after timeout
+            sendOtpBtn.disabled = false;
+          }
+        }, 1000);
+      }
+      
+      function updateTimerDisplay() {
+        const minutes = Math.floor(secondsRemaining / 60);
+        const seconds = secondsRemaining % 60;
+        otpTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (secondsRemaining <= 0) {
+          otpTimer.textContent = "OTP expired";
+        }
+      }
+      
+      function getEnteredOTP() {
+        return Array.from(otpInputs).map(input => input.value).join('');
+      }
+      
+      function validateOTP() {
+        const enteredOtp = getEnteredOTP();
+        if (enteredOtp.length === 6) {
+          if (enteredOtp === otp) {
+            hideError(otpError);
+            hiddenOtp.value = enteredOtp;
+          } else {
+            showError(otpError, "Invalid OTP. Please try again.");
+          }
+        }
+      }
+      
+      function showError(element, message) {
+        element.textContent = message;
+        element.style.display = "block";
+      }
+      
+      function hideError(element) {
+        element.style.display = "none";
+      }
+      
+      function showSuccess(element, message) {
+        element.textContent = message;
+        element.style.display = "block";
+        setTimeout(() => {
+          element.style.display = "none";
+        }, 3000);
+      }
+      
+      function showSuccessModal(role, name) {
+        // Set modal content based on role
+        if (role === "doctor") {
+          modalIcon.textContent = "⚕️";
+          modalTitle.textContent = "Doctor Registration Successful!";
+          modalMessage.textContent = `Dr. ${name}, your basic registration is complete. Please complete your professional details to start using NabhaCare.`;
+          modalButton.textContent = "Complete Professional Profile";
+        } else if (role === "pharmacist") {
+          modalIcon.textContent = "💊";
+          modalTitle.textContent = "Pharmacist Registration Successful!";
+          modalMessage.textContent = `${name}, your basic registration is complete. Please complete your pharmacy details to start using NabhaCare.`;
+          modalButton.textContent = "Complete Pharmacy Profile";
+        } else if (role === "patient") {
+          modalIcon.textContent = "✅";
+          modalTitle.textContent = "Registration Successful!";
+          modalMessage.textContent = `Welcome ${name}! Your account has been created successfully. You can now login to access NabhaCare services.`;
+          modalButton.textContent = "OK";
+        } else {
+          modalIcon.textContent = "👨‍💼";
+          modalTitle.textContent = "Admin Registration Successful!";
+          modalMessage.textContent = `Admin ${name}, your account has been created successfully.`;
+          modalButton.textContent = "OK";
+        }
+        
+        // Show the modal
+        successModal.classList.add("active");
+      }
+    });
+  </script>
 </body>
 </html>
